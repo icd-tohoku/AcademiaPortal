@@ -47,6 +47,7 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -65,7 +66,17 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AddAuthor.aspx" />
+    <Content Include="css\acp.css" />
+    <Content Include="css\dialog-polyfill.css" />
+    <Content Include="AuthorListJson.aspx" />
+    <Content Include="Default.aspx" />
+    <Content Include="EditPaper.aspx" />
+    <Content Include="js\AddAuthor.js" />
+    <Content Include="js\dialog-polyfill.js" />
+    <Content Include="NewSubmission.aspx" />
     <Content Include="packages.config" />
+    <Content Include="AcademiaPortal.Master" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -75,11 +86,72 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="PlayMovie.aspx" />
+    <Content Include="SearchSubmissions.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcademiaPortal.Master.cs">
+      <DependentUpon>AcademiaPortal.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AcademiaPortal.Master.designer.cs">
+      <DependentUpon>AcademiaPortal.Master</DependentUpon>
+    </Compile>
+    <Compile Include="AddAuthor.aspx.cs">
+      <DependentUpon>AddAuthor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddAuthor.aspx.designer.cs">
+      <DependentUpon>AddAuthor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AuthorListJson.aspx.cs">
+      <DependentUpon>AuthorListJson.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AuthorListJson.aspx.designer.cs">
+      <DependentUpon>AuthorListJson.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SearchSubmissions.aspx.cs">
+      <DependentUpon>SearchSubmissions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SearchSubmissions.aspx.designer.cs">
+      <DependentUpon>SearchSubmissions.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Code\Database.cs" />
+    <Compile Include="App_Code\Author.cs" />
+    <Compile Include="App_Code\Submission.cs" />
+    <Compile Include="EditPaper.aspx.cs">
+      <DependentUpon>EditPaper.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditPaper.aspx.designer.cs">
+      <DependentUpon>EditPaper.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="NewSubmission.aspx.cs">
+      <DependentUpon>NewSubmission.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewSubmission.aspx.designer.cs">
+      <DependentUpon>NewSubmission.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PlayMovie.aspx.cs">
+      <DependentUpon>PlayMovie.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PlayMovie.aspx.designer.cs">
+      <DependentUpon>PlayMovie.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

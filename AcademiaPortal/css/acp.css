@@ -1,0 +1,44 @@
+﻿
+.acp-card-wide.mdl-card {
+    width: 90vw;
+}
+
+
+/* reference for table: http://stackoverflow.com/a/36004018 */
+
+table.acp-table {
+    display: table;
+    /*width: 100%;
+    margin: 20px;*/
+}
+
+table.acp-table thead,
+table.acp-table tbody {
+    width: 100%;
+}
+
+table.acp-table thead {
+    overflow-y: scroll;
+    display: table;
+    table-layout: fixed;
+    width: calc(100% - 16px); /* assuming scrollbar width as 16px */
+}
+
+table.acp-table tbody {
+    overflow: auto;
+    height: 80vh;
+    display: block;
+}
+
+table.acp-table tr {
+    width: 100%;
+    text-align: left;
+    display: table;
+    table-layout: fixed;
+}
+
+
+
+dialog.acp-wide-form {
+    width: 60vw;
+}
