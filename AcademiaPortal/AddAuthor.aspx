@@ -1,6 +1,17 @@
 ﻿<%@ Page Title="Add Author" Language="C#" MasterPageFile="~/AcademiaPortal.Master" AutoEventWireup="true" CodeBehind="AddAuthor.aspx.cs" Inherits="AcademiaPortal.AddAuthor" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <script language="JavaScript">
+        function validateRequiredField(oSrc, args) {
+            args.IsValid = (args.Value.length > 0);
+            var control_obj = $("#" + oSrc.controltovalidate);
+            if (args.IsValid) {
+                control_obj.parent().removeClass('is-invalid');
+            } else {
+                control_obj.parent().addClass('is-invalid');
+            }
+        }
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
             var add_author_dialog = $("#add-author-dialog")[0];
@@ -24,7 +35,7 @@
             </button>
         </div>
         <div class="acp-card__supporting-text mdl-card__supporting-text">
-            <asp:Table class="acp-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" ID="authorTable" runat="server">
+            <asp:Table CssClass="acp-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" ID="authorTable" runat="server">
                 <asp:TableHeaderRow TableSection="TableHeader">
                     <asp:TableHeaderCell CssClass="mdl-data-table__cell--non-numeric">氏名</asp:TableHeaderCell>
                     <asp:TableHeaderCell CssClass="mdl-data-table__cell--non-numeric">NAME</asp:TableHeaderCell>
@@ -40,13 +51,27 @@
                 <div class="mdl-cell mdl-cell--6-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <asp:TextBox class="mdl-textfield__input" ID="family_ja_input" runat="server"></asp:TextBox>
-                        <label class="mdl-textfield__label" for="family_ja_input">姓</label>
+                        <label class="mdl-textfield__label" for="family_ja_input">姓 *</label>
+                        <asp:CustomValidator ID="family_ja_validator" runat="server"
+                            CssClass="mdl-textfield__error"
+                            ControlToValidate="family_ja_input"
+                            ValidateEmptyText="true"
+                            ErrorMessage="Required Field"
+                            ClientValidationFunction="validateRequiredField">
+                        </asp:CustomValidator>
                     </div>
                 </div>
                 <div class="mdl-cell mdl-cell--6-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <asp:TextBox class="mdl-textfield__input" ID="first_ja_input" runat="server"></asp:TextBox>
-                        <label class="mdl-textfield__label" for="first_ja_input">名</label>
+                        <label class="mdl-textfield__label" for="first_ja_input">名 *</label>
+                        <asp:CustomValidator ID="first_ja_validator" runat="server"
+                            CssClass="mdl-textfield__error"
+                            ControlToValidate="first_ja_input"
+                            ValidateEmptyText="true"
+                            ErrorMessage="Required Field"
+                            ClientValidationFunction="validateRequiredField">
+                        </asp:CustomValidator>
                     </div>
                 </div>
             </div>
@@ -54,7 +79,14 @@
                 <div class="mdl-cell mdl-cell--12-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <asp:TextBox class="mdl-textfield__input" ID="hiragana_ja_input" runat="server"></asp:TextBox>
-                        <label class="mdl-textfield__label" for="hiragana_ja_input">ふりがな</label>
+                        <label class="mdl-textfield__label" for="hiragana_ja_input">ふりがな *</label>
+                        <asp:CustomValidator ID="hiragana_ja_validator" runat="server"
+                            CssClass="mdl-textfield__error"
+                            ControlToValidate="hiragana_ja_input"
+                            ValidateEmptyText="true"
+                            ErrorMessage="Required Field"
+                            ClientValidationFunction="validateRequiredField">
+                        </asp:CustomValidator>
                     </div>
                 </div>
             </div>
@@ -62,7 +94,14 @@
                 <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <asp:TextBox class="mdl-textfield__input" ID="family_en_input" runat="server"></asp:TextBox>
-                        <label class="mdl-textfield__label" for="family_en_input">Family Name</label>
+                        <label class="mdl-textfield__label" for="family_en_input">Family Name *</label>
+                        <asp:CustomValidator ID="family_en_validator" runat="server"
+                            CssClass="mdl-textfield__error"
+                            ControlToValidate="family_en_input"
+                            ValidateEmptyText="true"
+                            ErrorMessage="Required Field"
+                            ClientValidationFunction="validateRequiredField">
+                        </asp:CustomValidator>
                     </div>
                 </div>
                 <div class="mdl-cell mdl-cell--4-col">
@@ -74,10 +113,18 @@
                 <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <asp:TextBox class="mdl-textfield__input" ID="first_en_input" runat="server"></asp:TextBox>
-                        <label class="mdl-textfield__label" for="first_en_input">First Name</label>
+                        <label class="mdl-textfield__label" for="first_en_input">First Name *</label>
+                        <asp:CustomValidator ID="first_en_validator" runat="server"
+                            CssClass="mdl-textfield__error"
+                            ControlToValidate="first_en_input"
+                            ValidateEmptyText="true"
+                            ErrorMessage="Required Field"
+                            ClientValidationFunction="validateRequiredField">
+                        </asp:CustomValidator>
                     </div>
                 </div>
             </div>
+            <p>* Required</p>
         </div>
         <div class="mdl-dialog__actions">
             <asp:Button CssClass="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" runat="server" ID="authorRegisterButton" Text="Register" OnClick="authorRegisterButton_Click"></asp:Button>

@@ -31,6 +31,15 @@ namespace AcademiaPortal {
         protected global::System.Web.UI.WebControls.TextBox family_ja_input;
         
         /// <summary>
+        /// family_ja_validator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator family_ja_validator;
+        
+        /// <summary>
         /// first_ja_input control.
         /// </summary>
         /// <remarks>
@@ -38,6 +47,15 @@ namespace AcademiaPortal {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox first_ja_input;
+        
+        /// <summary>
+        /// first_ja_validator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator first_ja_validator;
         
         /// <summary>
         /// hiragana_ja_input control.
@@ -49,6 +67,15 @@ namespace AcademiaPortal {
         protected global::System.Web.UI.WebControls.TextBox hiragana_ja_input;
         
         /// <summary>
+        /// hiragana_ja_validator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator hiragana_ja_validator;
+        
+        /// <summary>
         /// family_en_input control.
         /// </summary>
         /// <remarks>
@@ -56,6 +83,15 @@ namespace AcademiaPortal {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox family_en_input;
+        
+        /// <summary>
+        /// family_en_validator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator family_en_validator;
         
         /// <summary>
         /// middle_en_input control.
@@ -74,6 +110,15 @@ namespace AcademiaPortal {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox first_en_input;
+        
+        /// <summary>
+        /// first_en_validator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator first_en_validator;
         
         /// <summary>
         /// authorRegisterButton control.
