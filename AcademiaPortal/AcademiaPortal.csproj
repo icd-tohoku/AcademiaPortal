@@ -72,7 +72,6 @@
     <Content Include="AuthorListJson.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="EditPaper.aspx" />
-    <Content Include="js\AddAuthor.js" />
     <Content Include="js\dialog-polyfill.js" />
     <Content Include="NewSubmission.aspx" />
     <Content Include="packages.config" />
