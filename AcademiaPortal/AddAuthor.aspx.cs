@@ -55,42 +55,38 @@ namespace AcademiaPortal
         }
         protected void authorRegisterButton_Click(object sender, EventArgs e)
         {
-            string En_first = En_family.Text;
-            string EN_middle = En_middle.Text;
-            string En_last = En_family.Text;
-            string Ja_first = ja_First.Text;
-            string Ja_last = ja_fimily.Text;
-            string hiragana = Hiragana.Text;
-
-            //not necesally
+            string family_ja = family_ja_input.Text;
+            string first_ja = first_ja_input.Text;
+            string hiragana_ja = hiragana_ja_input.Text;
+            string family_en = family_en_input.Text;
+            string middle_en = middle_en_input.Text;
+            string first_en = first_en_input.Text;
             string mail = "";
 
-            //必須項目チェック
-            if (En_first == "" || En_last == "" || Ja_first == "" || Ja_last == "" || hiragana == "")
+            if (family_ja == "" || first_ja == "" || hiragana_ja == "" || family_en == "" || first_en == "")
             {
-                //エラー処理追加予定
+                // TODO: feedback
+                return;
             }
-            else
-            {
-                if (App_Code.Database.AddAuthor(En_first, EN_middle, En_last, Ja_first, Ja_last, mail, hiragana))
-                {
-                    //追加できたらページ更新
-                    Response.Redirect(Request.Url.OriginalString);
 
-                    //追加し旨を伝えるメッセージを表示予定
-                }
-                else
-                {
-                    //エラーメッセージ追加予定
-                }
+            if (App_Code.Database.AddAuthor(first_en, middle_en, family_en, first_ja, family_ja, mail, hiragana_ja))
+            {
+                // TODO: 追加できたらページ更新
+                Response.Redirect(Request.Url.OriginalString);
+
+                // TODO: 追加し旨を伝えるメッセージを表示予定
+
+                // clear form only when insertion is successful
+                family_ja_input.Text = "";
+                first_ja_input.Text = "";
+                hiragana_ja_input.Text = "";
+                family_en_input.Text = "";
+                middle_en_input.Text = "";
+                first_en_input.Text = "";
+                return;
             }
-            //フォームをクリア
-            En_family.Text = "";
-            En_middle.Text = "";
-            En_family.Text = "";
-            ja_First.Text = "";
-            ja_fimily.Text = "";
-            Hiragana.Text = "";
+            // TODO: エラーメッセージ追加予定
+
         }
     }
 }

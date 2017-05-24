@@ -22,58 +22,58 @@ namespace AcademiaPortal {
         protected global::System.Web.UI.WebControls.Table authorTable;
         
         /// <summary>
-        /// ja_fimily control.
+        /// family_ja_input control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ja_fimily;
+        protected global::System.Web.UI.WebControls.TextBox family_ja_input;
         
         /// <summary>
-        /// ja_First control.
+        /// first_ja_input control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ja_First;
+        protected global::System.Web.UI.WebControls.TextBox first_ja_input;
         
         /// <summary>
-        /// Hiragana control.
+        /// hiragana_ja_input control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Hiragana;
+        protected global::System.Web.UI.WebControls.TextBox hiragana_ja_input;
         
         /// <summary>
-        /// En_first control.
+        /// family_en_input control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox En_first;
+        protected global::System.Web.UI.WebControls.TextBox family_en_input;
         
         /// <summary>
-        /// En_middle control.
+        /// middle_en_input control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox En_middle;
+        protected global::System.Web.UI.WebControls.TextBox middle_en_input;
         
         /// <summary>
-        /// En_family control.
+        /// first_en_input control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox En_family;
+        protected global::System.Web.UI.WebControls.TextBox first_en_input;
         
         /// <summary>
         /// authorRegisterButton control.

@@ -1,15 +1,35 @@
-﻿
+﻿/* override material style*/
 .acp-card-wide.mdl-card {
-    width: 90vw;
+    width: auto;
 }
 
 
-/* reference for table: http://stackoverflow.com/a/36004018 */
+.acp-card__supporting-text.mdl-card__supporting-text {
+    width: auto;
+}
 
-table.acp-table {
+dialog.acp-fit-form.mdl-dialog {
+    width: 480px;
+    /* conflicts with dialog-polyfill: fails to hide */
+    /*
+        display: inline-block;
+    */
+    /* fit-content not supported in IE*/
+    /*
+        width: -moz-fit-content;
+        width: -webkit-fit-content;
+        width: fit-content;
+    */
+}
+
+.acp-constrained-grid.mdl-grid {
+    /* instead of fixing the width of the content, fix the width of the container*/
+    /*width: 400px;*/
+}
+
+/* reference for table: http://stackoverflow.com/a/36004018 */
+table .acp-table {
     display: table;
-    /*width: 100%;
-    margin: 20px;*/
 }
 
 table.acp-table thead,
@@ -35,10 +55,4 @@ table.acp-table tr {
     text-align: left;
     display: table;
     table-layout: fixed;
-}
-
-
-
-dialog.acp-wide-form {
-    width: 60vw;
 }
