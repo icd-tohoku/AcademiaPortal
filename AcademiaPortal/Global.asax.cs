@@ -11,6 +11,15 @@ namespace AcademiaPortal
     {
         protected void Application_Start(object sender, EventArgs e)
         {
+            string JQueryVer = "3.2.1";
+            System.Web.UI.ScriptManager.ScriptResourceMapping.AddDefinition("jquery", new System.Web.UI.ScriptResourceDefinition
+            {
+                ResourceName = "jquery",
+                CdnPath = "https://code.jquery.com/jquery-" + JQueryVer + ".min.js",
+                CdnDebugPath = "https://code.jquery.com/jquery-" + JQueryVer + ".js",
+                CdnSupportsSecureConnection = true,
+                LoadSuccessExpression = "window.jQuery"
+            });
         }
     }
 }
