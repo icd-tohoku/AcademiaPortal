@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddAuthor.aspx" />
+    <Content Include="Author.asmx" />
     <Content Include="css\acp.css" />
     <Content Include="css\dialog-polyfill.css" />
     <Content Include="AuthorListJson.aspx" />
@@ -87,6 +88,7 @@
     <Content Include="Global.asax" />
     <Content Include="PlayMovie.aspx" />
     <Content Include="SearchSubmissions.aspx" />
+    <Content Include="Submissions.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +106,10 @@
     <Compile Include="AddAuthor.aspx.designer.cs">
       <DependentUpon>AddAuthor.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Author.asmx.cs">
+      <DependentUpon>Author.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="AuthorListJson.aspx.cs">
       <DependentUpon>AuthorListJson.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -118,6 +124,7 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Author.cs" />
     <Compile Include="SearchSubmissions.aspx.cs">
       <DependentUpon>SearchSubmissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -153,10 +160,16 @@
       <DependentUpon>PlayMovie.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Submissions.aspx.cs">
+      <DependentUpon>Submissions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Submissions.aspx.designer.cs">
+      <DependentUpon>Submissions.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

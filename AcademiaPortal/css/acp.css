@@ -22,9 +22,8 @@ dialog.acp-fit-form.mdl-dialog {
     */
 }
 
-.acp-constrained-grid.mdl-grid {
-    /* instead of fixing the width of the content, fix the width of the container*/
-    /*width: 400px;*/
+.mdl-data-table .acp-data-table__cell--multiline {
+    white-space: normal;
 }
 
 /* reference for table: http://stackoverflow.com/a/36004018 */
