@@ -196,6 +196,9 @@
             });
             $("#author_dialog_cancel").click(function () {
                 author_dialog.close();
+                if ($("#author_dialog").attr("acp-author-action") === "edit") {
+                    clearDialog();
+                }
             });
             $("#edit_author_button").click(function () {
                 var dialog = $("#author_dialog");
