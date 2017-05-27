@@ -7,6 +7,8 @@ using System.Web.Script.Services;
 
 namespace AcademiaPortal
 {
+    using PaperAuthorship = Dictionary<Int32, List<Int32>>;
+    using LinearPaperAuthorship = List<String>;
     /// <summary>
     /// Summary description for Papers
     /// </summary>
@@ -17,6 +19,7 @@ namespace AcademiaPortal
     [ScriptService]
     public class Papers : System.Web.Services.WebService
     {
+        
         static String paperPrimaryKeyColumn = "PaperID";
         static String[] paperColumns =
         {
@@ -67,6 +70,26 @@ namespace AcademiaPortal
                 }
             }
             return papers;
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public LinearPaperAuthorship GetPaperAuthorships()
+        {
+            LinearPaperAuthorship authorship = new LinearPaperAuthorship();
+
+            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
+            {
+                conn.Open();
+                System.Data.SqlClient.SqlCommand retrievePapersCommand = new System.Data.SqlClient.SqlCommand("SELECT * FROM PaperAuthorship", conn);
+                System.Data.SqlClient.SqlDataReader reader = retrievePapersCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    authorship.Add((Int32)reader["PaperID"] + ":" + (Int32)reader["AuthorID"]);
+                }
+            }
+            
+            return authorship;
         }
 
     }
