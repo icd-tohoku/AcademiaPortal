@@ -26,6 +26,10 @@ dialog.acp-fit-form.mdl-dialog {
     white-space: normal;
 }
 
+.mdl-data-table .acp-data-table__primary-key {
+    display: none;
+}
+
 /* reference for table: http://stackoverflow.com/a/36004018 */
 table .acp-table {
     display: table;
