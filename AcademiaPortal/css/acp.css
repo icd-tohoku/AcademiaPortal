@@ -1,4 +1,5 @@
-﻿/* override material style*/
+﻿/* acp stands for ACademic Portal */
+/* override material style */
 .acp-card-wide.mdl-card {
     width: auto;
 }
@@ -7,6 +8,22 @@
 .acp-card__supporting-text.mdl-card__supporting-text {
     width: auto;
 }
+
+.acp-card__actions {
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+    .acp-card__actions > * {
+        margin-left: 8px;
+        height: 36px;
+    }
+
+        .acp-card__actions > *:first-child {
+            margin-left: 0;
+        }
 
 dialog.acp-fit-form.mdl-dialog {
     width: 480px;
@@ -26,32 +43,36 @@ dialog.acp-fit-form.mdl-dialog {
     white-space: normal;
 }
 
+.mdl-data-table .acp-data-table__primary-key {
+    display: none;
+}
+
 /* reference for table: http://stackoverflow.com/a/36004018 */
 table .acp-table {
     display: table;
 }
 
-table.acp-table thead,
-table.acp-table tbody {
-    width: 100%;
-}
+    table.acp-table thead,
+    table.acp-table tbody {
+        width: 100%;
+    }
 
-table.acp-table thead {
-    overflow-y: scroll;
-    display: table;
-    table-layout: fixed;
-    width: calc(100% - 16px); /* assuming scrollbar width as 16px */
-}
+    table.acp-table thead {
+        overflow-y: scroll;
+        display: table;
+        table-layout: fixed;
+        width: calc(100% - 16px); /* assuming scrollbar width as 16px */
+    }
 
-table.acp-table tbody {
-    overflow: auto;
-    height: 80vh;
-    display: block;
-}
+    table.acp-table tbody {
+        overflow: auto;
+        height: 80vh;
+        display: block;
+    }
 
-table.acp-table tr {
-    width: 100%;
-    text-align: left;
-    display: table;
-    table-layout: fixed;
-}
+    table.acp-table tr {
+        width: 100%;
+        text-align: left;
+        display: table;
+        table-layout: fixed;
+    }
