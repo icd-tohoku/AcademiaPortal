@@ -15,7 +15,25 @@ namespace AcademiaPortal.Models
         public String familyName_Ja;
         public String hiragana;
         public String email;
-        public Object precedence;
+        private Object _precedence;
+        public Object precedence
+        {
+            get
+            {
+                return this._precedence;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this._precedence = DBNull.Value;
+                }
+                else
+                {
+                    this._precedence = value;
+                }
+            }
+        }
 
         public Author()
         {

@@ -2,8 +2,6 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script type="text/javascript">
-        var authors = [];
-        var selected_authors = null;
         function FieldLengthValidator(field_id, min_length, max_length, events) {
             this.min_length = (min_length == void 0) ? 1 : min_length;
             this.max_length = max_length;
@@ -46,6 +44,12 @@
             }
             return result;
         }
+        function getAuthorName_En(author) {
+            return [author.firstName_En, author.middleName_En, author.familyName_En].filter(function (s) { return s; }).join(" ");
+        }
+        function getAuthorName_Ja(author) {
+            return [author.familyName_Ja, author.firstName_Ja].join(" ");
+        }
         function addToAuthorTable(table_body, author) {
             var row = $("<tr>");
             var checkbox_id = "row[" + author.authorID + "]";
@@ -59,12 +63,12 @@
                 if (event.target.checked) {
                     for (var i = 0, length = checkboxes.length; i < length; i++) {
                         if (event.target.id != checkboxes[i].getAttribute('for')) {
-                            checkboxes[i].MaterialCheckbox.uncheck();   
+                            checkboxes[i].MaterialCheckbox.uncheck();
                         }
                     }
-                    
+
                     var selected_id = parseInt(event.target.getAttribute("acp-primary-key"));
-                    
+
                     //find the selected author
                     for (var i = 0; i < authors.length; i++) {
                         if (authors[i].authorID === selected_id) {
@@ -83,10 +87,24 @@
 
             var checkbox_cell = $("<td>").append(checkbox_container);
             row.append(checkbox_cell);
-            row.append($("<td>").text([author.familyName_Ja, author.firstName_Ja].join(" ")).addClass("mdl-data-table__cell--non-numeric"));
-            row.append($("<td>").text([author.firstName_En, author.middleName_En, author.familyName_En].filter(function (s) { return s; }).join(" ")).addClass("mdl-data-table__cell--non-numeric"));
-            row.append($("<td>").text(author.hiragana).addClass("mdl-data-table__cell--non-numeric"));
+            row.append($("<td>").text(getAuthorName_Ja(author)).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "name_ja"));
+            row.append($("<td>").text(getAuthorName_En(author)).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "name_en"));
+            row.append($("<td>").text(author.hiragana).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "hiragana"));
             table_body.append(row);
+        }
+        function updateAuthorTable(table_body, author) {
+            var rows = table_body.find("tr");
+            for (var i = 0; i < rows.length; i++) {
+                var row = $(rows[i]);
+                var row_primary_key = parseInt(row.find("label.mdl-data-table__select input.mdl-checkbox__input").attr("acp-primary-key"));
+                if (row_primary_key === author.authorID) {
+                    row.find("td[acp-col-name='name_ja']").text(getAuthorName_Ja(author));
+                    row.find("td[acp-col-name='name_en']").text(getAuthorName_En(author));
+                    row.find("td[acp-col-name='hiragana']").text(author.hiragana);
+                    break;
+                }
+            }
+
         }
         function clearDialog() {
             $("#family_ja_input").parent()[0].MaterialTextfield.change("");
@@ -96,6 +114,72 @@
             $("#middle_en_input").parent()[0].MaterialTextfield.change("");
             $("#first_en_input").parent()[0].MaterialTextfield.change("");
         }
+        function AddAuthor() {
+            if (!form_validator.validate()) return;
+            var author = {};
+            author.familyName_En = $("#family_en_input").val();
+            author.firstName_En = $("#first_en_input").val();
+            author.middleName_En = $("#middle_en_input").val();
+            author.familyName_Ja = $("#family_ja_input").val();
+            author.firstName_Ja = $("#first_ja_input").val();
+            author.hiragana = $("#hiragana_ja_input").val();
+            console.log(author);
+            $.ajax({
+                type: "POST",
+                url: "Author.asmx/AddAuthor",
+                data: JSON.stringify({
+                    author: author
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                },
+                success: function (result) {
+                    var author = result.d;
+                    console.log(author);
+                    authors.push(author)
+                    addToAuthorTable($("#author_2_table").find("tbody"), author);
+                    clearDialog();
+                    author_dialog.close();
+                    $("#author_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Author added." });
+                }
+            });
+        }
+        function UpdateAuthor() {
+            if (!form_validator.validate()) return;
+            selected_author.familyName_En = $("#family_en_input").val();
+            selected_author.firstName_En = $("#first_en_input").val();
+            selected_author.middleName_En = $("#middle_en_input").val();
+            selected_author.familyName_Ja = $("#family_ja_input").val();
+            selected_author.firstName_Ja = $("#first_ja_input").val();
+            selected_author.hiragana = $("#hiragana_ja_input").val();
+            console.log(selected_author);
+            $.ajax({
+                type: "POST",
+                url: "Author.asmx/UpdateAuthor",
+                data: JSON.stringify({
+                    author: selected_author
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                },
+                success: function (result) {
+                    var author = result.d;
+                    console.log(author);
+                    clearDialog();
+                    author_dialog.close();
+                    // TODO: update the model selected_author
+                    updateAuthorTable($("#author_2_table").find("tbody"), author);
+                    $("#author_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Author updated." });
+                }
+            });
+        }
+        var authors = [];
+        var selected_authors = null;
+        var form_validator = new FormValidator();
         $(document).ready(function () {
             var author_dialog = $("#author_dialog")[0];
             if (!author_dialog.showModal) {
@@ -104,20 +188,22 @@
             $("#add_author_button").click(function () {
                 var dialog = $("#author_dialog");
                 dialog.find(".mdl-dialog__title").text("Add Author");
-                dialog.removeClass("acp-author-edit");
-                dialog.addClass("acp-author-add");
-                
+                $("#author_dialog_confirm").text("Add");
+                dialog.attr("acp-author-action", "add");
+
+
                 author_dialog.showModal();
             });
-            $("#add_author_cancel").click(function () {
+            $("#author_dialog_cancel").click(function () {
                 author_dialog.close();
             });
             $("#edit_author_button").click(function () {
                 var dialog = $("#author_dialog");
                 dialog.find(".mdl-dialog__title").text("Edit Author");
-                dialog.removeClass("acp-author-add");
-                dialog.addClass("acp-author-edit");
-                
+                $("#author_dialog_confirm").text("Update");
+                dialog.attr("acp-author-action", "edit");
+
+
                 $("#family_ja_input").parent()[0].MaterialTextfield.change(selected_author.familyName_Ja);
                 $("#first_ja_input").parent()[0].MaterialTextfield.change(selected_author.firstName_Ja);
                 $("#hiragana_ja_input").parent()[0].MaterialTextfield.change(selected_author.hiragana);
@@ -127,7 +213,7 @@
                 author_dialog.showModal();
             })
 
-            var form_validator = new FormValidator();
+
             form_validator.add(new FieldLengthValidator("family_en_input"));
             form_validator.add(new FieldLengthValidator("first_en_input"));
 
@@ -148,41 +234,15 @@
                     }
                 }
             });
-            $("#add_author_confirm").click(function () {
-                if (!form_validator.validate()) return;
-                var author = {};
-                author.familyName_En = $("#family_en_input").val();
-                author.firstName_En = $("#first_en_input").val();
-                author.middleName_En = $("#middle_en_input").val();
-                author.familyName_Ja = $("#family_ja_input").val();
-                author.firstName_Ja = $("#first_ja_input").val();
-                author.hiragana = $("#hiragana_ja_input").val();
-                console.log(author);
-                $.ajax({
-                    type: "POST",
-                    url: "Author.asmx/AddAuthor",
-                    data: JSON.stringify({
-                        author: author
-                    }),
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
-                    },
-                    success: function (result) {
-                        var author = result.d;
-                        console.log(author);
-                        authors.push(author)
-                        addToAuthorTable($("#author_2_table").find("tbody"), author);
-                        clearDialog();
-                        author_dialog.close();
-                        console.log($("#author_snackbar"));
-                        console.log($("#author_snackbar")[0]);
-                        $("#author_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Author added." });
-                    }
-                });
+            $("#author_dialog_confirm").on("click", function () {
+                var action = $("#author_dialog").attr("acp-author-action");
+                if (action === "add") {
+                    AddAuthor();
+                } else if (action === "edit") {
+                    UpdateAuthor();
+                }
             });
-            
+
         });
     </script>
 </asp:Content>
@@ -262,8 +322,8 @@
             <p>* Required</p>
         </div>
         <div class="mdl-dialog__actions">
-            <button id="add_author_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Add</button>
-            <button id="add_author_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
+            <button id="author_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"></button>
+            <button id="author_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
         </div>
     </dialog>
 </asp:Content>
