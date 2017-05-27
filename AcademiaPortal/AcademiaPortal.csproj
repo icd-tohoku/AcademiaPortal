@@ -86,6 +86,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="Paper.aspx" />
+    <Content Include="Papers.asmx" />
     <Content Include="PlayMovie.aspx" />
     <Content Include="SearchSubmissions.aspx" />
     <Content Include="Submissions.aspx" />
@@ -125,6 +127,18 @@
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Author.cs" />
+    <Compile Include="Models\Paper.cs" />
+    <Compile Include="Paper.aspx.cs">
+      <DependentUpon>Paper.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paper.aspx.designer.cs">
+      <DependentUpon>Paper.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Papers.asmx.cs">
+      <DependentUpon>Papers.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SearchSubmissions.aspx.cs">
       <DependentUpon>SearchSubmissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
