@@ -128,7 +128,6 @@
     </Compile>
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Paper.cs" />
-    <Compile Include="Models\PaperAuthorship.cs" />
     <Compile Include="Paper.aspx.cs">
       <DependentUpon>Paper.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

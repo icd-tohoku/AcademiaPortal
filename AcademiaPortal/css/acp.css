@@ -4,8 +4,13 @@
     width: auto;
 }
 
+/* TODO: merge the following two*/
 
 .acp-card__supporting-text.mdl-card__supporting-text {
+    width: auto;
+}
+
+.acp-card-subcomponent-full-width {
     width: auto;
 }
 
@@ -25,6 +30,29 @@
             margin-left: 0;
         }
 
+div.acp-scrollable-list {
+    height: 150px;
+    overflow-y: auto;
+}
+
+li.acp-list__item--two-line--thin.mdl-list__item--two-line {
+    padding: 8px;
+    height: 52px;
+    min-height: initial;
+}
+
+div.acp-chip-container {
+    overflow-y: auto;
+    display: block;
+}
+
+/*.acp-textfield--thin.mdl-textfield {
+    padding: 4px 0;
+}
+    .acp-textfield--thin.mdl-textfield label.mdl-textfield__label {
+        top: 8px;
+    }*/ 
+
 dialog.acp-fit-form.mdl-dialog {
     width: 480px;
     /* conflicts with dialog-polyfill: fails to hide */
@@ -37,6 +65,10 @@ dialog.acp-fit-form.mdl-dialog {
         width: -webkit-fit-content;
         width: fit-content;
     */
+}
+
+dialog.acp-wide-form.mdl-dialog {
+    width: 720px;
 }
 
 .mdl-data-table .acp-data-table__cell--multiline {
