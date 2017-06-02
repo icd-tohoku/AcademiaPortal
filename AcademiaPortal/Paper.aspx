@@ -127,7 +127,7 @@
             $("#dialog_author_chips").append(chip);
         }
         function removeFromDialogSelectedAuthors(author_id, update_checkbox) {
-            $("#dialog_author_chips").remove("span.acp-author-chip[acp-primary-key" + author_id +"]");
+            $("#dialog_author_chips").remove("span.acp-author-chip[acp-primary-key" + author_id + "]");
             for (var i = 0; i < dialog_selected_authors.length; i++) {
                 if (dialog_selected_authors[i].authorID === author_id) {
                     dialog_selected_authors.splice(i, 1);
@@ -185,7 +185,7 @@
 
                 for (var i = 0; i < matched_authors.length; i++) {
                     var author = matched_authors[i];
-                    
+
                     var primary_content = $("<span>")
                         .addClass("mdl-list__item-primary-content")
                         .append($("<i>").addClass("material-icons").addClass("mdl-list__item-icon").text("person"))
@@ -379,10 +379,10 @@
                 </div>
             </div>
             <p>* Required</p>
+        </div>
     </dialog>
     <div class="mdl-dialog__actions">
         <button id="paper_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"></button>
         <button id="paper_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
-    </div>
     </div>
 </asp:Content>
