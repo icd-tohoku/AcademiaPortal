@@ -1,14 +1,11 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/AcademiaPortal.Master" AutoEventWireup="true" CodeBehind="Paper.aspx.cs" Inherits="AcademiaPortal.Paper" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <%--<script src="bower_components/jquery-tokeninput/src/jquery.tokeninput.js"></script>
-    <link rel="stylesheet" href="bower_components/jquery-tokeninput/styles/token-input-facebook.css">
-    <link rel="stylesheet" href="bower_components/jquery-tokeninput/styles/token-input-mac.css">
-    <link rel="stylesheet" href="bower_components/jquery-tokeninput/styles/token-input.css">--%>
-
-
     <script defer src="bower_components/mdl-select-component/mdl-selectfield.min.js"></script>
     <link rel="stylesheet" href="bower_components/mdl-select-component/mdl-selectfield.min.css">
+
+    <script defer src="bower_components/dropzone/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="bower_components/dropzone/dist/min/dropzone.min.css">
 
     <script type="text/javascript">
         function getPublishDateText(paper) {
@@ -19,7 +16,7 @@
             return [author.firstName_En, author.middleName_En, author.familyName_En].filter(function (s) { return s; }).join(" ");
         }
         function getAuthorName_Ja(author) {
-            return [author.familyName_Ja, author.firstName_Ja].join(" ");
+            return [author.familyName_Ja, author.firstName_Ja].filter(function (s) { return s; }).join(" ");
         }
         function getAuthorName(author) {
             var name_ja = getAuthorName_Ja(author);
@@ -34,10 +31,9 @@
                 author.hiragana;
         }
         function getAuthorsText(paper) {
-            var authorIDs = authorships[paper.paperID]
             var authorNames = [];
-            for (var i = 0; i < authorIDs.length; i++) {
-                var author = authorsByID[authorIDs[i]];
+            for (var i = 0; i < paper.authorIDs.length; i++) {
+                var author = authorsByID[paper.authorIDs[i]];
                 authorNames.push(getAuthorName_En(author));
             }
             return authorNames.join(", ");
@@ -155,7 +151,6 @@
         var authors = [];
         var dialog_selected_authors = [];
         var authorsByID = {};
-        var authorships = {};
         var selected_papers = null;
 
         $(document).ready(function () {
@@ -228,8 +223,8 @@
             });
 
             $.ajax({
-                type: "POST",
-                url: "Papers.asmx/GetPapers",
+                type: "GET",
+                url: "/api/papers",
                 data: null,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -237,11 +232,10 @@
                     alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
                 },
                 success: function (paper_result) {
-
-                    papers = paper_result.d;
+                    papers = paper_result;
                     $.ajax({
-                        type: "POST",
-                        url: "Author.asmx/GetAuthors",
+                        type: "GET",
+                        url: "/api/authors",
                         data: null,
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
@@ -249,39 +243,15 @@
                             alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
                         },
                         success: function (author_result) {
-
-                            authors = author_result.d;
+                            authors = author_result;
                             for (var i = 0; i < authors.length; i++) {
                                 authorsByID[authors[i].authorID] = authors[i];
                             }
 
-                            $.ajax({
-                                type: "POST",
-                                url: "Papers.asmx/GetPaperAuthorships",
-                                data: null,
-                                contentType: 'application/json; charset=utf-8',
-                                dataType: 'json',
-                                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
-                                },
-                                success: function (authorship_result) {
-                                    var linear_authorships = authorship_result.d;
-                                    for (var i = 0; i < linear_authorships.length; i++) {
-                                        var tokens = linear_authorships[i].split(":");
-                                        var paperID = parseInt(tokens[0]);
-                                        var authorID = parseInt(tokens[1]);
-                                        if (!authorships[paperID]) {
-                                            authorships[paperID] = [];
-                                        }
-                                        authorships[paperID].push(authorID);
-                                    }
-
-                                    var table_body = $("#paper_table").find("tbody");
-                                    for (var i = 0; i < papers.length; i++) {
-                                        addToPaperTable(table_body, papers[i])
-                                    }
-                                }
-                            });
+                            var table_body = $("#paper_table").find("tbody");
+                            for (var i = 0; i < papers.length; i++) {
+                                addToPaperTable(table_body, papers[i])
+                            }
                         }
                     });
                 }
@@ -315,65 +285,172 @@
     <dialog id="paper_dialog" class="acp-wide-form mdl-dialog">
         <h3 class="mdl-dialog__title"></h3>
         <div class="mdl-dialog__content">
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--12-col">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" id="title_input">
-                        <label class="mdl-textfield__label" for="title_input">Title</label>
+            <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                <div class="mdl-tabs__tab-bar">
+                    <a href="#general-panel" class="mdl-tabs__tab is-active">General</a>
+                    <a href="#authors-panel" class="mdl-tabs__tab">Authors</a>
+                    <a href="#files-panel" class="mdl-tabs__tab">Files</a>
+                </div>
+
+                <div class="mdl-tabs__panel is-active" id="general-panel">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--2-col">
+                            <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+                                <select class="mdl-selectfield__select" id="genre_input">
+                                    <option value="0">Long Paper</option>
+                                    <option value="1">Short Paper</option>
+                                    <option value="2">Abstract</option>
+                                    <option value="3">Other</option>
+                                </select>
+                                <label class="mdl-selectfield__label" for="genre_input">Genre</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--10-col">
+                            <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="title_input">
+                                <label class="mdl-textfield__label" for="title_input">Title</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+                                <select class="mdl-selectfield__select" id="publication_category_input">
+                                    <option value="0">Journal</option>
+                                    <option value="1">International Conference</option>
+                                    <option value="2">Domestic Conference</option>
+                                    <option value="3">Review</option>
+                                    <option value="4">English Journal</option>
+                                    <option value="5">Other</option>
+                                </select>
+                                <label class="mdl-selectfield__label" for="publication_category_input">Publication Category</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="publication_input">
+                                <label class="mdl-textfield__label" for="publication_input">Publication</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--1-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="volume_input">
+                                <label class="mdl-textfield__label" for="volume_input">Volume</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--1-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="page_input">
+                                <label class="mdl-textfield__label" for="page_input">Page</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--1-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="publish_date_year_input">
+                                <label class="mdl-textfield__label" for="publish_date_year_input">Year</label>
+                                <span class="mdl-textfield__error">Invalid Year</span>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--1-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="publish_date_month_input">
+                                <label class="mdl-textfield__label" for="document_url_input">Month</label>
+                                <span class="mdl-textfield__error">Invalid Month</span>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="digital_object_id_input">
+                                <label class="mdl-textfield__label" for="digital_object_id_input">DOI</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--3-col acp-cell--vertically-centered">
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="peer_reviewed_input">
+                                <input type="checkbox" id="peer_reviewed_input" class="mdl-checkbox__input">
+                                <span class="mdl-checkbox__label">Peer Reviewed</span>
+                            </label>
+                        </div>
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+                                <select class="mdl-selectfield__select" id="presentation_style">
+                                    <option value="0">Oral Presentation</option>
+                                    <option value="1">Poster Presentation</option>
+                                    <option value="2">Demonstration</option>
+                                    <option value="3">None</option>
+                                </select>
+                                <label class="mdl-selectfield__label" for="presentation_style">Presentation Style</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield">
+                                <textarea class="mdl-textfield__input" rows="3" id="acknowledgment_input"></textarea>
+                                <label class="mdl-textfield__label" for="acknowledgment_input">Acknowledgment</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--3-col">
-                    <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
-                        <select class="mdl-selectfield__select" id="publication_category_input" name="publication_category">
-                            <option value="0">Journal</option>
-                            <option value="1">International Conference</option>
-                            <option value="2">Domestic Conference</option>
-                            <option value="3">Review</option>
-                            <option value="4">English Journal</option>
-                            <option value="5">Other</option>
-                        </select>
-                        <label class="mdl-selectfield__label" for="publication_category_input">Publication Category</label>
-                    </div>
-                </div>
-                <div class="mdl-cell mdl-cell--5-col">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" id="publication_input">
-                        <label class="mdl-textfield__label" for="publication_input">Publication</label>
-                    </div>
-                </div>
-                <div class="mdl-cell mdl-cell--2-col">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" id="volume_input">
-                        <label class="mdl-textfield__label" for="volume_input">Volume</label>
-                    </div>
-                </div>
-                <div class="mdl-cell mdl-cell--2-col">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" id="page_input">
-                        <label class="mdl-textfield__label" for="page_input">Page</label>
-                    </div>
-                </div>
-            </div>
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--12-col">
-                    <div class="mdl-card mdl-shadow--2dp acp-card-wide">
-                        <div class="mdl-card__actions mdl-card--border acp-card-subcomponent-full-width">
-                            <div class="mdl-textfield mdl-js-textfield">
+                <div class="mdl-tabs__panel" id="authors-panel">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield">
                                 <input type="text" class="mdl-textfield__input" id="author_dialog_search">
                                 <label class="mdl-textfield__label" for="author_dialog_search">Search for authors...</label>
                             </div>
                         </div>
-                        <div class="mdl-card__actions mdl-card--border acp-card-subcomponent-full-width">
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
                             <div class="acp-scrollable-list">
                                 <ul class="mdl-list" id="dialog_matched_author_list">
                                 </ul>
                             </div>
                         </div>
-                        <div class="mdl-card__actions mdl-card--border acp-card-subcomponent-full-width">
-                            <div class="acp-chip-container" id="dialog_author_chips">
-                            </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+                            <div class="acp-chip-container" id="dialog_author_chips">No author selected</div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="has_enterprise_partnership_input">
+                                <input type="checkbox" id="has_enterprise_partnership_input" class="mdl-checkbox__input">
+                                <span class="mdl-checkbox__label">産業連携</span>
+                            </label>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="has_international_co_author_input">
+                                <input type="checkbox" id="has_international_co_author_input" class="mdl-checkbox__input">
+                                <span class="mdl-checkbox__label">国際共著</span>
+                            </label>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="is_collaborative_project_input">
+                                <input type="checkbox" id="is_collaborative_project_input" class="mdl-checkbox__input">
+                                <span class="mdl-checkbox__label">共同プロジェクト</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mdl-tabs__panel" id="files-panel">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <form action="/api/blob" class="dropzone" id="document_file_input"></form>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <form action="/api/blob" class="dropzone" id="video_file_input"></form>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <form action="/api/blob" class="dropzone" id="package_file_input"></form>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <form action="/api/blob" class="dropzone" id="publication_format_input"></form>
                         </div>
                     </div>
                 </div>

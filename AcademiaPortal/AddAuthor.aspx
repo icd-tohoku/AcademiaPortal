@@ -126,17 +126,15 @@
             console.log(author);
             $.ajax({
                 type: "POST",
-                url: "Author.asmx/AddAuthor",
-                data: JSON.stringify({
-                    author: author
-                }),
+                url: "/api/authors",
+                data: JSON.stringify(author),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
                 },
                 success: function (result) {
-                    var author = result.d;
+                    var author = result;
                     console.log(author);
                     authors.push(author)
                     addToAuthorTable($("#author_2_table").find("tbody"), author);
@@ -156,18 +154,16 @@
             selected_author.hiragana = $("#hiragana_ja_input").val();
             console.log(selected_author);
             $.ajax({
-                type: "POST",
-                url: "Author.asmx/UpdateAuthor",
-                data: JSON.stringify({
-                    author: selected_author
-                }),
+                type: "PUT",
+                url: "/api/authors/" + selected_author.authorID,
+                data: JSON.stringify(selected_author),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
                 },
                 success: function (result) {
-                    var author = result.d;
+                    var author = result;
                     console.log(author);
                     clearDialog();
                     author_dialog.close();
@@ -221,8 +217,8 @@
             form_validator.add(new FieldLengthValidator("first_en_input"));
 
             $.ajax({
-                type: "POST",
-                url: "Author.asmx/GetAuthors",
+                type: "GET",
+                url: "/api/authors",
                 data: null,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -231,7 +227,7 @@
                 },
                 success: function (result) {
                     var table_body = $("#author_2_table").find("tbody");
-                    authors = result.d;
+                    authors = result;
                     for (var i = 0; i < authors.length; i++) {
                         addToAuthorTable(table_body, authors[i])
                     }

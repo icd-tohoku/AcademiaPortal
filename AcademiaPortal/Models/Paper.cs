@@ -28,6 +28,7 @@ namespace AcademiaPortal.Models
         public Boolean isCollaborativeProject;
         public String acknowledgment;
         private Object _publicationConfirmationFilePath;
+        public List<Int32> authorIDs;
 
         public static Int64 GetEpoch(DateTime t)
         {
@@ -147,6 +148,7 @@ namespace AcademiaPortal.Models
             isCollaborativeProject = false;
             acknowledgment = "";
             publicationConfirmationFilePath = DBNull.Value;
+            authorIDs = new List<Int32>();
         }
         public Paper(System.Data.SqlClient.SqlDataReader reader)
         {
@@ -170,7 +172,7 @@ namespace AcademiaPortal.Models
             isCollaborativeProject = (Boolean)reader["IsCollaborativeProject"];
             acknowledgment = (String)reader["Acknowledgment"];
             publicationConfirmationFilePath = reader["PublicationConfirmationFilePath"];
+            authorIDs = new List<Int32>();
         }
-
     }
 }

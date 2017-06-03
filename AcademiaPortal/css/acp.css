@@ -10,8 +10,12 @@
     width: auto;
 }
 
-.acp-card-subcomponent-full-width {
+.acp-card-subcomponent--full-width {
     width: auto;
+}
+
+.acp-textfield--full-width.mdl-textfield {
+    width: 100%;
 }
 
 .acp-card__actions {
@@ -42,17 +46,42 @@ li.acp-list__item--two-line--thin.mdl-list__item--two-line {
 }
 
 div.acp-chip-container {
+    color: rgba(0,0,0,.26);
+    font-size: 16px;
+    padding: 8px;
     overflow-y: auto;
-    display: block;
+    display: flex;
+    min-height: 36px;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
 }
+
+    div.acp-chip-container > * {
+        margin-right: 4px;
+    }
 
 /*.acp-textfield--thin.mdl-textfield {
     padding: 4px 0;
 }
     .acp-textfield--thin.mdl-textfield label.mdl-textfield__label {
         top: 8px;
-    }*/ 
+    }*/
 
+div.acp-cell--vertically-centered {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
 dialog.acp-fit-form.mdl-dialog {
     width: 480px;
     /* conflicts with dialog-polyfill: fails to hide */
@@ -68,7 +97,7 @@ dialog.acp-fit-form.mdl-dialog {
 }
 
 dialog.acp-wide-form.mdl-dialog {
-    width: 720px;
+    width: 780px;
 }
 
 .mdl-data-table .acp-data-table__cell--multiline {

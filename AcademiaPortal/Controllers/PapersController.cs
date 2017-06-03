@@ -1,25 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Services;
-using System.Web.Script.Services;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 
-namespace AcademiaPortal
+namespace AcademiaPortal.Controllers
 {
-    using PaperAuthorship = Dictionary<Int32, List<Int32>>;
-    using LinearPaperAuthorship = List<String>;
-    /// <summary>
-    /// Summary description for Papers
-    /// </summary>
-    [WebService(Namespace = "http://tempuri.org/")]
-    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
-    [System.ComponentModel.ToolboxItem(false)]
-    // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
-    [ScriptService]
-    public class Papers : System.Web.Services.WebService
+    public class PapersController : ApiController
     {
-        
         static String paperPrimaryKeyColumn = "PaperID";
         static String[] paperColumns =
         {
@@ -45,18 +34,11 @@ namespace AcademiaPortal
         };
         static String[] paperColumnLabels = paperColumns.Select(column => "@" + column).ToArray();
 
-
-        [WebMethod]
-        public string HelloWorld()
+        // GET: api/Papers
+        public IEnumerable<Models.Paper> Get()
         {
-            return "Hello World";
-        }
-
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public List<Models.Paper> GetPapers()
-        {
-            List<Models.Paper> papers = new List<Models.Paper>();
+            Dictionary<Int32, Models.Paper> papersByID = new Dictionary<Int32, Models.Paper>();
+            //List<Models.Paper> papers = new List<Models.Paper>();
 
             using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
             {
@@ -66,17 +48,9 @@ namespace AcademiaPortal
                 while (reader.Read())
                 {
                     Models.Paper paper = new Models.Paper(reader);
-                    papers.Add(paper);
+                    papersByID.Add(paper.paperID, paper);
                 }
             }
-            return papers;
-        }
-
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public LinearPaperAuthorship GetPaperAuthorships()
-        {
-            LinearPaperAuthorship authorship = new LinearPaperAuthorship();
 
             using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
             {
@@ -85,12 +59,32 @@ namespace AcademiaPortal
                 System.Data.SqlClient.SqlDataReader reader = retrievePapersCommand.ExecuteReader();
                 while (reader.Read())
                 {
-                    authorship.Add((Int32)reader["PaperID"] + ":" + (Int32)reader["AuthorID"]);
+                    papersByID[(Int32)reader["PaperID"]].authorIDs.Add((Int32)reader["AuthorID"]);
                 }
             }
-            
-            return authorship;
+
+            return papersByID.Select(kvp => kvp.Value);
         }
 
+        // GET: api/Papers/5
+        public string Get(int id)
+        {
+            return "value";
+        }
+
+        // POST: api/Papers
+        public void Post([FromBody]string value)
+        {
+        }
+
+        // PUT: api/Papers/5
+        public void Put(int id, [FromBody]string value)
+        {
+        }
+
+        // DELETE: api/Papers/5
+        public void Delete(int id)
+        {
+        }
     }
 }

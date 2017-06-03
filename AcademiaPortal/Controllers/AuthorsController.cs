@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Services;
-using System.Web.Script.Services;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 
-namespace AcademiaPortal
+namespace AcademiaPortal.Controllers
 {
-    /// <summary>
-    /// Summary description for Author
-    /// </summary>
-    [WebService]
-    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
-    [System.ComponentModel.ToolboxItem(false)]
-    // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
-    [ScriptService]
-    public class Author : System.Web.Services.WebService
+    public class AuthorsController : ApiController
     {
         static String authorPrimaryKeyColumn = "AuthorID";
         static String[] authorColumns = {
@@ -32,22 +24,14 @@ namespace AcademiaPortal
         static String insertAuthorSQLTemplate = "INSERT INTO Authors " +
                         "(" + String.Join(",", authorColumns) + ")" +
                         "VALUES " +
-                        "(" + String.Join(",", authorColumnLabels) + ");"+
+                        "(" + String.Join(",", authorColumnLabels) + ");" +
                         "SELECT CAST(scope_identity() AS int)";
         static String updateAuthorSQLTemplate = "UPDATE Authors SET " +
             String.Join(", ", authorColumns.Select(column => column + " = @" + column)) + " " +
-            "WHERE "+ authorPrimaryKeyColumn+" = @"+ authorPrimaryKeyColumn+";";
+            "WHERE " + authorPrimaryKeyColumn + " = @" + authorPrimaryKeyColumn + ";";
 
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string HelloWorld()
-        {
-            return "Hello World";
-        }
-
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public List<Models.Author> GetAuthors()
+        // GET api/<controller>
+        public IEnumerable<Models.Author> Get()
         {
             List<Models.Author> authors = new List<Models.Author>();
 
@@ -65,11 +49,9 @@ namespace AcademiaPortal
             return authors;
         }
 
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public Models.Author AddAuthor(Models.Author author)
+        // POST api/<controller>
+        public IHttpActionResult Post([FromBody]Models.Author author)
         {
-            //HttpContext.Current.Request
             using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
             {
                 conn.Open();
@@ -88,15 +70,12 @@ namespace AcademiaPortal
                     author.authorID = (int)insertAuthorCommand.ExecuteScalar();
                 }
             }
-            return author;
+            return Ok(author);
         }
 
-
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public Models.Author UpdateAuthor(Models.Author author)
+        // PUT api/<controller>/5
+        public IHttpActionResult Put(int id, [FromBody]Models.Author author)
         {
-            //HttpContext.Current.Request
             using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
             {
                 conn.Open();
@@ -111,12 +90,12 @@ namespace AcademiaPortal
                     updateAuthorCommand.Parameters.AddWithValue(authorColumns[5], author.hiragana);
                     updateAuthorCommand.Parameters.AddWithValue(authorColumns[6], author.email);
                     updateAuthorCommand.Parameters.AddWithValue(authorColumns[7], author.precedence);
-                    updateAuthorCommand.Parameters.AddWithValue(authorPrimaryKeyColumn, author.authorID);
-                    
+                    updateAuthorCommand.Parameters.AddWithValue(authorPrimaryKeyColumn, id);
+
                     updateAuthorCommand.ExecuteNonQuery();
                 }
             }
-            return author;
+            return Ok(author);
         }
     }
 }

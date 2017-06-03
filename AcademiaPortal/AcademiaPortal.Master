@@ -5,7 +5,7 @@
 <html>
 <head runat="server">
     <title></title>
-    
+
     <!-- Material Design Lite -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-orange.min.css" />
@@ -20,41 +20,40 @@
 
     <!-- custom style -->
     <link rel="stylesheet" href="css/acp.css" type="text/css" />
-    
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
 <body>
-    <form id="form1" runat="server">
-        <div class="mdl-layout mdl-js-layout">
-            <header class="mdl-layout__header">
-                <div class="mdl-layout__header-row">
-                    <!-- Title -->
-                    <span class="mdl-layout-title">ICD Publication Portal</span>
-                    <!-- Add spacer, to align navigation to the right -->
-                    <div class="mdl-layout-spacer"></div>
-                    <!-- Navigation -->
-                    <nav class="mdl-navigation">
-                        <a class="mdl-navigation__link" href="SearchSubmissions.aspx">Search</a>
-                        <a class="mdl-navigation__link" href="NewSubmission.aspx">Paper Submission</a>
-                        <a class="mdl-navigation__link" href="AddAuthor.aspx">Author Registration</a>
-                    </nav>
-                </div>
-            </header>
-            <div class="mdl-layout__drawer">
-                <span class="mdl-layout-title">Options</span>
+
+    <div class="mdl-layout mdl-js-layout">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">ICD Publication Portal</span>
+                <!-- Add spacer, to align navigation to the right -->
+                <div class="mdl-layout-spacer"></div>
+                <!-- Navigation -->
                 <nav class="mdl-navigation">
                     <a class="mdl-navigation__link" href="SearchSubmissions.aspx">Search</a>
                     <a class="mdl-navigation__link" href="NewSubmission.aspx">Paper Submission</a>
                     <a class="mdl-navigation__link" href="AddAuthor.aspx">Author Registration</a>
                 </nav>
             </div>
-            <main class="mdl-layout__content">
-                <asp:ContentPlaceHolder ID="MainContent" runat="server">
-                </asp:ContentPlaceHolder>
-            </main>
-    </form>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">Options</span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="SearchSubmissions.aspx">Search</a>
+                <a class="mdl-navigation__link" href="NewSubmission.aspx">Paper Submission</a>
+                <a class="mdl-navigation__link" href="AddAuthor.aspx">Author Registration</a>
+            </nav>
+        </div>
+        <main class="mdl-layout__content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+        </main>
 </body>
 </html>
