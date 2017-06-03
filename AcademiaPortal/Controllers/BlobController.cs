@@ -4,12 +4,22 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
 namespace AcademiaPortal.Controllers
 {
+    public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
+    {
+        public CustomMultipartFormDataStreamProvider(string path) : base(path) { }
+        public override string GetLocalFileName(HttpContentHeaders headers)
+        {
+            return Guid.NewGuid().ToString() + "-" + headers.ContentDisposition.FileName.Replace("\"", string.Empty);
+        }
+
+    }
     public class BlobController : ApiController
     {
         // GET api/<controller>
@@ -34,7 +44,8 @@ namespace AcademiaPortal.Controllers
         {
         }
 
-        public Task<HttpResponseMessage> PostFormData()
+        // POST api/<controller>
+        public Task<HttpResponseMessage> Post()
         {
             // Check if the request contains multipart/form-data.
             if (!Request.Content.IsMimeMultipartContent())
@@ -42,8 +53,18 @@ namespace AcademiaPortal.Controllers
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
 
+            Trace.WriteLine("Request.Content.Headers.ContentLength="+Request.Content.Headers.ContentLength);
+            System.Configuration.Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+            System.Web.Configuration.HttpRuntimeSection section = config.GetSection("system.web/httpRuntime") as System.Web.Configuration.HttpRuntimeSection;
+            Trace.WriteLine("system.web/httpRuntime.MaxRequestLength"+ section.MaxRequestLength);
+
+            if (Request.Content.Headers.ContentLength > section.MaxRequestLength * 1024)
+            {
+                return Task.FromResult(Request.CreateErrorResponse(HttpStatusCode.RequestEntityTooLarge, "File should be smaller than " + Math.Round(section.MaxRequestLength / 1024.0) + "MB."));
+            }
+            
             string root = HttpContext.Current.Server.MapPath("~/App_Data");
-            var provider = new MultipartFormDataStreamProvider(root);
+            var provider = new CustomMultipartFormDataStreamProvider(root);
 
             // Read the form data and return an async task.
             var task = Request.Content.ReadAsMultipartAsync(provider).

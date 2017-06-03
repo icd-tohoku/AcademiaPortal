@@ -256,6 +256,49 @@
                     });
                 }
             });
+            var dropzoneDisplayServerError = function (file, response) {
+                $(file.previewElement).find('.dz-error-message').text(response.Message);
+            };
+
+            var document_dropzone = new Dropzone("#document_dropzone", {
+                url: "/api/blob",
+                maxFiles: 1,
+                addRemoveLinks: true,
+                init: function () {
+                    this.on("error", dropzoneDisplayServerError);
+                }
+            });
+            $("#document_dropzone").addClass("dropzone");
+
+            var video_dropzone = new Dropzone("#video_dropzone", {
+                url: "/api/blob",
+                maxFiles: 1,
+                addRemoveLinks: true,
+                init: function () {
+                    this.on("error", dropzoneDisplayServerError);
+                }
+            });
+            $("#video_dropzone").addClass("dropzone");
+
+            var package_dropzone = new Dropzone("#package_dropzone", {
+                url: "/api/blob",
+                maxFiles: 1,
+                addRemoveLinks: true,
+                init: function () {
+                    this.on("error", dropzoneDisplayServerError);
+                }
+            });
+            $("#package_dropzone").addClass("dropzone");
+
+            var publication_confirmation_dropzone = new Dropzone("#publication_confirmation_dropzone", {
+                url: "/api/blob",
+                maxFiles: 1,
+                addRemoveLinks: true,
+                init: function () {
+                    this.on("error", dropzoneDisplayServerError);
+                }
+            });
+            $("#publication_confirmation_dropzone").addClass("dropzone");
         });
     </script>
 </asp:Content>
@@ -438,19 +481,31 @@
                 </div>
                 <div class="mdl-tabs__panel" id="files-panel">
                     <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--6-col">
-                            <form action="/api/blob" class="dropzone" id="document_file_input"></form>
+                        <div class="mdl-cell mdl-cell--6-col acp-dropzone-container">
+                            <label for="document_dropzone"><span>Paper PDF</span></label>
+                            <div id="document_dropzone">
+                                <div class="dz-message" data-dz-message><span>Drop a file (or click) to upload</span></div>
+                            </div>
                         </div>
-                        <div class="mdl-cell mdl-cell--6-col">
-                            <form action="/api/blob" class="dropzone" id="video_file_input"></form>
+                        <div class="mdl-cell mdl-cell--6-col acp-dropzone-container">
+                            <label for="video_dropzone"><span>Video</span></label>
+                            <div id="video_dropzone">
+                                <div class="dz-message" data-dz-message><span>Drop a file (or click) to upload</span></div>
+                            </div>
                         </div>
                     </div>
                     <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--6-col">
-                            <form action="/api/blob" class="dropzone" id="package_file_input"></form>
+                        <div class="mdl-cell mdl-cell--6-col acp-dropzone-container">
+                            <label for="package_dropzone"><span>Package</span></label>
+                            <div id="package_dropzone">
+                                <div class="dz-message" data-dz-message><span>Drop a file (or click) to upload</span></div>
+                            </div>
                         </div>
-                        <div class="mdl-cell mdl-cell--6-col">
-                            <form action="/api/blob" class="dropzone" id="publication_format_input"></form>
+                        <div class="mdl-cell mdl-cell--6-col acp-dropzone-container">
+                            <label for="publication_confirmation_dropzone"><span>研究成果発表確認シート</span></label>
+                            <div id="publication_confirmation_dropzone">
+                                <div class="dz-message" data-dz-message><span>Drop a file (or click) to upload</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>

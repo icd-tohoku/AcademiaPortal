@@ -110,7 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddAuthor.aspx" />
-    <Content Include="Author.asmx" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
@@ -153,7 +152,6 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="Paper.aspx" />
-    <Content Include="Papers.asmx" />
     <Content Include="PlayMovie.aspx" />
     <Content Include="SearchSubmissions.aspx" />
     <Content Include="Submissions.aspx" />
@@ -178,10 +176,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Author.asmx.cs">
-      <DependentUpon>Author.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="AuthorListJson.aspx.cs">
       <DependentUpon>AuthorListJson.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -207,10 +201,6 @@
     </Compile>
     <Compile Include="Paper.aspx.designer.cs">
       <DependentUpon>Paper.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Papers.asmx.cs">
-      <DependentUpon>Papers.asmx</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SearchSubmissions.aspx.cs">
       <DependentUpon>SearchSubmissions.aspx</DependentUpon>
