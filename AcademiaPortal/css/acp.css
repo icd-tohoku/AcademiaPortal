@@ -142,6 +142,13 @@ table .acp-table {
         width: 100%;
     }
 
+    table.acp-table tr {
+        width: 100%;
+        text-align: left;
+        display: table;
+        table-layout: fixed;
+    }
+
     table.acp-table thead {
         overflow-y: scroll;
         display: table;
@@ -155,9 +162,5 @@ table .acp-table {
         display: block;
     }
 
-    table.acp-table tr {
-        width: 100%;
-        text-align: left;
-        display: table;
-        table-layout: fixed;
-    }
+
+    

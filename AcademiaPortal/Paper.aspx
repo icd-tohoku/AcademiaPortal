@@ -71,6 +71,14 @@
             row.append($("<td>").text(getPublishDateText(paper)).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "publish_date"));
             table_body.append(row);
         }
+
+        function setPaperTable(papers) {
+            var table_body = $("#paper_table").find("tbody");
+            table_body.empty();
+            for (var i = 0; i < papers.length; i++) {
+                addToPaperTable(table_body, papers[i]);
+            }
+        }
         function searchAuthors(search_text) {
             var matched_authors = [];
             var lowercase_search_text = search_text.toLowerCase();
@@ -126,8 +134,9 @@
             console.log("remove triggered for id " + author_id + " and update_checkbox = " + update_checkbox);
             if (update_checkbox) {
                 var checkbox = $("#dialog_matched_author_list").find("label.acp-author-checkbox[acp-primary-key=" + author_id + "]");
-                console.log(checkbox);
-                checkbox[0].MaterialCheckbox.uncheck();
+                if (checkbox.length > 0) {
+                    checkbox[0].MaterialCheckbox.uncheck();
+                }
             }
         }
         function getDialogSelectedAuthorIDs() {
@@ -144,6 +153,74 @@
         function getDialogSelectedAuthorCount() {
             return $("#dialog_author_chips").find("span.acp-author-chip").length;
         }
+
+
+
+
+
+
+
+
+
+
+        function resetMainAuthorChipsContainerLabel(is_add_chip) {
+            var current_chip_count = getMainSelectedAuthorCount();
+            if (is_add_chip && current_chip_count === 0) {
+                $("#main_author_chips").empty();
+            } else if (!is_add_chip && current_chip_count === 0) {
+                $("#main_author_chips").append("No author selected.");
+            }
+        }
+        function addToMainSelectedAuthors(author_id) {
+            var author = authorsByID[author_id];
+            var delete_button = $("<button>").addClass("mdl-chip__action").attr("type", "button")
+                .append($("<i>").addClass("material-icons").text("cancel"));
+            var chip = $("<span>")
+                .addClass("mdl-chip")
+                .addClass("mdl-chip--deletable")
+                .addClass("acp-author-chip")
+                .attr("acp-primary-key", author_id)
+                .attr("draggable", true)
+                .append($("<span>").addClass("mdl-chip__text").text(getAuthorName(author)))
+                .append(delete_button);
+            componentHandler.upgradeElements(chip[0]);
+            delete_button.on("click", function (event) {
+                console.log($(this).parent());
+                removeFromMainSelectedAuthors($(this).parent().attr("acp-primary-key"), true);
+            });
+            resetMainAuthorChipsContainerLabel(true);
+            $("#main_author_chips").append(chip);
+        }
+        function removeFromMainSelectedAuthors(author_id, update_checkbox) {
+            $("#main_author_chips").remove("span.acp-author-chip[acp-primary-key" + author_id + "]");
+            $("#main_author_chips").find("span.acp-author-chip[acp-primary-key=" + author_id + "]").remove();
+            resetMainAuthorChipsContainerLabel(false);
+            console.log("remove triggered for id " + author_id + " and update_checkbox = " + update_checkbox);
+            if (update_checkbox) {
+                var checkbox = $("#main_matched_author_list").find("label.acp-author-checkbox[acp-primary-key=" + author_id + "]");
+                if (checkbox.length > 0) {
+                    checkbox[0].MaterialCheckbox.uncheck();
+                }
+            }
+        }
+        function getMainSelectedAuthorIDs() {
+            var author_chips = $("#main_author_chips").find("span.acp-author-chip");
+            var authorIDs = [];
+            for (var i = 0; i < author_chips.length; i++) {
+                authorIDs.push(parseInt($(author_chips[i]).attr("acp-primary-key")));
+            }
+            return authorIDs;
+        }
+        function mainSelectedAuthorsContain(author_id) {
+            return $("#main_author_chips").find("span.acp-author-chip[acp-primary-key=" + author_id + "]").length > 0;
+        }
+        function getMainSelectedAuthorCount() {
+            return $("#main_author_chips").find("span.acp-author-chip").length;
+        }
+
+
+
+
 
         function clearDialog() {
             //TODO
@@ -205,12 +282,33 @@
                     console.log(paper);
                     papers.push(paper);
                     // TODO: do not update view
-                    addToPaperTable($("#paper_table").find("tbody"), paper);
                     clearDialog();
                     paper_dialog.close();
                     $("#paper_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Paper added." });
                 }
             });
+        }
+
+        function getSearchCriteria() {
+            var criteria = {};
+            // will be ignored duing query string conversion when authorIDs is empty
+            criteria.authorIDs = getMainSelectedAuthorIDs();
+            if ($("#main_publish_date_toggle").is(":checked")) {
+                criteria.publishDateFrom = Date.UTC(parseInt($("#main_publish_date_from_input").val()))
+                criteria.publishDateTo = Date.UTC(parseInt($("#main_publish_date_to_input").val()) + 1);
+            }
+
+            if ($("#main_has_enterprise_partnership_toggle").is(":checked")) {
+                criteria.hasEnterprisePartnership = $("#main_has_enterprise_partnership_input").is(":checked");
+            }
+
+            if ($("#main_publication_category_toggle").is(":checked")) {
+                criteria.publicationCategory = parseInt($("#main_publication_category_input").val());
+            }
+
+            criteria.firstAuthorOnly = $("#main_first_author_input").is(":checked");
+
+            return criteria;
         }
 
 
@@ -219,6 +317,7 @@
         var authorsByID = {};
         var selected_papers = null;
         var form_validator = new FormValidator();
+        var main_validator = new FormValidator();
 
         $(document).ready(function () {
 
@@ -289,6 +388,57 @@
                 }
             });
 
+
+            $("#author_main_search").on("keyup", function (event) {
+                var search_text = $(this).val();
+                var author_list = $("#main_matched_author_list");
+                var matched_authors = searchAuthors(search_text);
+                author_list.empty();
+
+                for (var i = 0; i < matched_authors.length; i++) {
+                    var author = matched_authors[i];
+
+                    var primary_content = $("<span>")
+                        .addClass("mdl-list__item-primary-content")
+                        .append($("<i>").addClass("material-icons").addClass("mdl-list__item-icon").text("person"))
+                        .append(getAuthorName(author))
+                        .append($("<span>").addClass("mdl-list__item-sub-title").text(getAuthorDescription(author)));
+                    var checkbox_id = "main-author-checkbox-" + author.authorID;
+                    var checkbox = $("<label>")
+                        .addClass("mdl-checkbox")
+                        .addClass("mdl-js-checkbox")
+                        .addClass("mdl-js-ripple-effect")
+                        .addClass("acp-author-checkbox")
+                        .attr("for", checkbox_id)
+                        .attr("acp-primary-key", author.authorID)
+                        .append($("<input>").addClass("mdl-checkbox__input").attr("type", "checkbox")
+                            .attr("id", checkbox_id));
+                    checkbox.on("change", function (event) {
+                        var author_id = parseInt($(this).attr("acp-primary-key"));
+                        if (event.target.checked) {
+                            addToMainSelectedAuthors(author_id);
+                        } else {
+                            removeFromMainSelectedAuthors(author_id);
+                        }
+                    });
+                    componentHandler.upgradeElements(checkbox[0]);
+                    if (mainSelectedAuthorsContain(author.authorID)) {
+                        checkbox[0].MaterialCheckbox.check();
+                    }
+
+                    var secondary_content = $("<span>")
+                        .addClass("mdl-list__item-secondary-content")
+                        .append($("<span>").addClass("mdl-list__item-secondary-action").append(checkbox));
+                    var author_item = $("<li>")
+                        .addClass("acp-list__item--two-line--thin")
+                        .addClass("mdl-list__item")
+                        .addClass("mdl-list__item--two-line")
+                        .append(primary_content)
+                        .append(secondary_content);
+                    author_list.append(author_item);
+                }
+            });
+
             $("#paper_dialog_confirm").on("click", function () {
                 var action = $("#paper_dialog").attr("acp-action");
                 if (action === "add") {
@@ -297,46 +447,82 @@
                     UpdatePaper();
                 }
             });
+
             form_validator.add(new FieldLengthValidator("title_input"));
             form_validator.add(new FieldLengthValidator("publication_input"));
             form_validator.add(new FieldIntegerRangeValidator("publish_date_year_input", 0));
             form_validator.add(new FieldIntegerRangeValidator("publish_date_month_input", 1, 12));
             form_validator.add(new AuthorshipValidator("dialog_author_chips"));
-            
+
+            main_validator.add(new FieldIntegerRangeValidator("main_publish_date_from_input", 0, 3000, "main_publish_date_toggle"));
+            main_validator.add(new FieldIntegerRangeValidator("main_publish_date_to_input", 0, 3000, "main_publish_date_toggle"));
+
 
             $.ajax({
                 type: "GET",
-                url: "/api/papers",
+                url: "/api/authors",
                 data: null,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
                 },
-                success: function (paper_result) {
-                    papers = paper_result;
-                    $.ajax({
-                        type: "GET",
-                        url: "/api/authors",
-                        data: null,
-                        contentType: 'application/json; charset=utf-8',
-                        dataType: 'json',
-                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                            alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
-                        },
-                        success: function (author_result) {
-                            authors = author_result;
-                            for (var i = 0; i < authors.length; i++) {
-                                authorsByID[authors[i].authorID] = authors[i];
-                            }
-
-                            var table_body = $("#paper_table").find("tbody");
-                            for (var i = 0; i < papers.length; i++) {
-                                addToPaperTable(table_body, papers[i])
-                            }
-                        }
-                    });
+                success: function (author_result) {
+                    authors = author_result;
+                    for (var i = 0; i < authors.length; i++) {
+                        authorsByID[authors[i].authorID] = authors[i];
+                    }
                 }
+            });
+
+
+            $("#main_publish_date_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_publish_date_from_input").prop("disabled", false);
+                    $("#main_publish_date_to_input").prop("disabled", false);
+                } else {
+                    $("#main_publish_date_from_input").prop("disabled", true);
+                    $("#main_publish_date_to_input").prop("disabled", true);
+                }
+            });
+
+            $("#main_has_enterprise_partnership_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_has_enterprise_partnership_input").prop("disabled", false);
+                } else {
+                    $("#main_has_enterprise_partnership_input").prop("disabled", true);
+                }
+            });
+
+            $("#main_publication_category_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_publication_category_input").prop("disabled", false);
+                } else {
+                    $("#main_publication_category_input").prop("disabled", true);
+                }
+            });
+
+
+            $("#search_paper_button").on("click", function () {
+                if (!main_validator.validate()) {
+                    return;
+                }
+                var criteria = getSearchCriteria();
+                console.log(criteria);
+                $.ajax({
+                    type: "GET",
+                    url: "/api/papers?" + $.param(criteria),
+                    data: null,
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                    },
+                    success: function (paper_result) {
+                        papers = paper_result;
+                        setPaperTable(papers);
+                    }
+                });
             });
             var dropzoneDisplayServerError = function (file, response) {
                 $(file.previewElement).find('.dz-error-message').text(response.Message);
@@ -398,12 +584,113 @@
         <button class="mdl-snackbar__action" type="button"></button>
     </div>
     <div class="acp-card-wide mdl-card mdl-shadow--2dp">
+        <div class="acp-card-subcomponent--full-width mdl-card__supporting-text">
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--6-col mdl-shadow--2dp">
+                    <div class="mdl-grid acp-cell--vertically-centered">
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield">
+                                <input type="text" class="mdl-textfield__input" id="author_main_search">
+                                <label class="mdl-textfield__label" for="author_main_search">Search for authors...</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_first_author_input">
+                                <input type="checkbox" id="main_first_author_input" class="mdl-checkbox__input">
+                                <span class="mdl-checkbox__label">First Author</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+                            <div class="acp-scrollable-list">
+                                <ul class="mdl-list" id="main_matched_author_list">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+                            <div class="acp-chip-container" id="main_author_chips">No author selected.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--6-col mdl-shadow--2dp">
+                    <div class="mdl-grid acp-cell--vertically-centered">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_publish_date_toggle">
+                                <input type="checkbox" id="main_publish_date_toggle" class="mdl-switch__input">
+                                <span class="mdl-switch__label">Publish Date</span>
+                            </label>
+                        </div>
+
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="main_publish_date_from_input" disabled>
+                                <label class="mdl-textfield__label" for="main_publish_date_from_input">From Year</label>
+                                <span class="mdl-textfield__error">Invalid Year</span>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="main_publish_date_to_input" disabled>
+                                <label class="mdl-textfield__label" for="main_publish_date_to_input">To Year</label>
+                                <span class="mdl-textfield__error">Invalid Year</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid acp-cell--vertically-centered">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_has_enterprise_partnership_toggle">
+                                <input type="checkbox" id="main_has_enterprise_partnership_toggle" class="mdl-switch__input">
+                                <span class="mdl-switch__label">Enterprise Partnership</span>
+                            </label>
+                        </div>
+
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_has_enterprise_partnership_input">
+                                    <input type="checkbox" id="main_has_enterprise_partnership_input" class="mdl-checkbox__input" disabled>
+                                    <span class="mdl-checkbox__label"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid acp-cell--vertically-centered">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_publication_category_toggle">
+                                <input type="checkbox" id="main_publication_category_toggle" class="mdl-switch__input">
+                                <span class="mdl-switch__label"></span>
+                            </label>
+                        </div>
+                        <div class="mdl-cell mdl-cell--8-col">
+                            <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+                                <select class="mdl-selectfield__select" id="main_publication_category_input" disabled>
+                                    <option value="0">Journal</option>
+                                    <option value="1">International Conference</option>
+                                    <option value="2">Domestic Conference</option>
+                                    <option value="3">Review</option>
+                                    <option value="4">English Journal</option>
+                                    <option value="5">Other</option>
+                                </select>
+                                <label class="mdl-selectfield__label" for="publication_category_input">Publication Category</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mdl-card__title acp-card__actions">
+            <button type="button" id="search_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Search</button>
+        </div>
+    </div>
+    <div class="acp-card-wide mdl-card mdl-shadow--2dp">
         <div class="mdl-card__title acp-card__actions">
             <button type="button" id="add_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Add</button>
             <button type="button" id="edit_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary" disabled>Edit</button>
         </div>
-        <div class="acp-card__supporting-text mdl-card__supporting-text">
-            <table id="paper_table" class="acp-table mdl-data-table mdl-shadow--2dp">
+        <div class="acp-card-subcomponent--full-width mdl-card__supporting-text">
+            <table id="paper_table" class="acp-table--no-scroll mdl-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
                         <th></th>

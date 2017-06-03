@@ -21,6 +21,10 @@ namespace AcademiaPortal.Controllers
         public Boolean? isCollaborativeProject;
         public Boolean? peerReviewed;
 
+        public Int32? genre;
+        public Int32? publicationCategory;
+        public Int32? presentationStyle;
+
         public PapersSearchCriteria(IEnumerable<KeyValuePair<String, String>> queryParams)
         {
             authorIDs = new List<int>();
@@ -28,34 +32,83 @@ namespace AcademiaPortal.Controllers
             {
                 String key = queryParam.Key;
                 String value = queryParam.Value;
+                Int32 parsedInt32;
+                Int64 parsedInt64;
+                Boolean parsedBoolean;
+
                 switch (key)
                 {
                     case "authorIDs":
-                        authorIDs.Add(Int32.Parse(value));
+                        if (Int32.TryParse(value, out parsedInt32))
+                        {
+                            authorIDs.Add(parsedInt32);
+                        }
                         break;
                     case "firstAuthorOnly":
-                        firstAuthorOnly = Boolean.Parse(value);
+                        if (Boolean.TryParse(value, out parsedBoolean))
+                        {
+                            firstAuthorOnly = parsedBoolean;
+                        }
                         break;
                     case "authorsMatchAny":
-                        authorsMatchAny = Boolean.Parse(value);
+                        if (Boolean.TryParse(value, out parsedBoolean))
+                        {
+                            authorsMatchAny = parsedBoolean;
+                        }
                         break;
                     case "publishDateFrom":
-                        publishDateFrom = Models.Paper.GetDateTime(Int64.Parse(value));
+                        if (Int64.TryParse(value, out parsedInt64))
+                        {
+                            publishDateFrom = Models.Paper.GetDateTime(parsedInt64);
+                        }
                         break;
                     case "publishDateTo":
-                        publishDateTo = Models.Paper.GetDateTime(Int64.Parse(value));
+                        if (Int64.TryParse(value, out parsedInt64))
+                        {
+                            publishDateTo = Models.Paper.GetDateTime(parsedInt64);
+                        }
                         break;
                     case "hasEnterprisePartnership":
-                        hasEnterprisePartnership = Boolean.Parse(value);
+                        if (Boolean.TryParse(value, out parsedBoolean))
+                        {
+                            hasEnterprisePartnership = parsedBoolean;
+                        }
                         break;
                     case "hasInternationalCoAuthor":
-                        hasInternationalCoAuthor = Boolean.Parse(value);
+                        if (Boolean.TryParse(value, out parsedBoolean))
+                        {
+                            hasInternationalCoAuthor = parsedBoolean;
+                        }
                         break;
                     case "isCollaborativeProject":
-                        isCollaborativeProject = Boolean.Parse(value);
+                        if (Boolean.TryParse(value, out parsedBoolean))
+                        {
+                            isCollaborativeProject = parsedBoolean;
+                        }
                         break;
                     case "peerReviewed":
-                        peerReviewed = Boolean.Parse(value);
+                        if (Boolean.TryParse(value, out parsedBoolean))
+                        {
+                            peerReviewed = parsedBoolean;
+                        }
+                        break;
+                    case "genre":
+                        if (Int32.TryParse(value, out parsedInt32))
+                        {
+                            genre = parsedInt32;
+                        }
+                        break;
+                    case "publicationCategory":
+                        if (Int32.TryParse(value, out parsedInt32))
+                        {
+                            publicationCategory = parsedInt32;
+                        }
+                        break;
+                    case "presentationStyle":
+                        if (Int32.TryParse(value, out parsedInt32))
+                        {
+                            presentationStyle = parsedInt32;
+                        }
                         break;
                     default:
                         break;
@@ -98,7 +151,7 @@ namespace AcademiaPortal.Controllers
             }
             if (hasEnterprisePartnership != null)
             {
-                filteringConjunctiveConditions.Add("Papers.HasEnterprisePartnership = " + ((bool)hasInternationalCoAuthor ? 1 : 0));
+                filteringConjunctiveConditions.Add("Papers.HasEnterprisePartnership = " + ((bool)hasEnterprisePartnership ? 1 : 0));
             }
             if (isCollaborativeProject != null)
             {
@@ -111,6 +164,18 @@ namespace AcademiaPortal.Controllers
             if (peerReviewed != null)
             {
                 filteringConjunctiveConditions.Add("Papers.PeerReviewed = " + ((bool)peerReviewed ? 1 : 0));
+            }
+            if (genre != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.Genre = " + genre);
+            }
+            if (publicationCategory != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.PublicationCategory = " + publicationCategory);
+            }
+            if (presentationStyle != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.PresentationStyle = " + presentationStyle);
             }
 
             if (filteringConjunctiveConditions.Count > 0)

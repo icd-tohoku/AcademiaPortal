@@ -26,9 +26,10 @@ FieldLengthValidator.prototype.registerHandler = function () {
     this.field.on(this.events, this.validate.bind(this));
 };
 
-function FieldIntegerRangeValidator(input_id, min_value, max_value, events) {
+function FieldIntegerRangeValidator(input_id, min_value, max_value, toggle_id, events) {
     this.min_value = (min_value == void 0) ? 0 : min_value;
     this.max_value = max_value;
+    this.toggle_id = toggle_id;
     this.events = events || "change";
     this.input_id = input_id;
     this.field = $("#" + this.input_id);
@@ -36,6 +37,11 @@ function FieldIntegerRangeValidator(input_id, min_value, max_value, events) {
 }
 
 FieldIntegerRangeValidator.prototype.validate = function () {
+    if (this.toggle_id && !$("#" + this.toggle_id).is(":checked")) {
+        console.log("toggle is off");
+        return true;
+    }
+    console.log("toggle is on");
     var result = false;
     var field_parent = this.field.parent();
     var field_error_lable = this.field.parent().find("span.mdl-textfield__error");
