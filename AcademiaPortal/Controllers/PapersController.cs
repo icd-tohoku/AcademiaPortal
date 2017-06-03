@@ -7,6 +7,147 @@ using System.Web.Http;
 
 namespace AcademiaPortal.Controllers
 {
+    public class PapersSearchCriteria
+    {
+        public List<int> authorIDs;
+        public Boolean firstAuthorOnly;
+        public Boolean authorsMatchAny;
+
+        public DateTime? publishDateFrom;
+        public DateTime? publishDateTo;
+
+        public Boolean? hasEnterprisePartnership;
+        public Boolean? hasInternationalCoAuthor;
+        public Boolean? isCollaborativeProject;
+        public Boolean? peerReviewed;
+
+        public PapersSearchCriteria(IEnumerable<KeyValuePair<String, String>> queryParams)
+        {
+            authorIDs = new List<int>();
+            foreach (var queryParam in queryParams)
+            {
+                String key = queryParam.Key;
+                String value = queryParam.Value;
+                switch (key)
+                {
+                    case "authorIDs":
+                        authorIDs.Add(Int32.Parse(value));
+                        break;
+                    case "firstAuthorOnly":
+                        firstAuthorOnly = Boolean.Parse(value);
+                        break;
+                    case "authorsMatchAny":
+                        authorsMatchAny = Boolean.Parse(value);
+                        break;
+                    case "publishDateFrom":
+                        publishDateFrom = Models.Paper.GetDateTime(Int64.Parse(value));
+                        break;
+                    case "publishDateTo":
+                        publishDateTo = Models.Paper.GetDateTime(Int64.Parse(value));
+                        break;
+                    case "hasEnterprisePartnership":
+                        hasEnterprisePartnership = Boolean.Parse(value);
+                        break;
+                    case "hasInternationalCoAuthor":
+                        hasInternationalCoAuthor = Boolean.Parse(value);
+                        break;
+                    case "isCollaborativeProject":
+                        isCollaborativeProject = Boolean.Parse(value);
+                        break;
+                    case "peerReviewed":
+                        peerReviewed = Boolean.Parse(value);
+                        break;
+                    default:
+                        break;
+
+                }
+
+            }
+        }
+
+        public String getSQLTemplate()
+        {
+            String paperFilteringSQLTemplate =
+                "SELECT DISTINCT Papers.PaperID " +
+                "FROM Papers ";
+
+            List<String> filteringConjunctiveConditions = new List<String>();
+            if (authorIDs.Count > 0)
+            {
+                paperFilteringSQLTemplate += "INNER JOIN PaperAuthorship ON PaperAuthorship.PaperID = Papers.PaperID ";
+                List<String> authorshipDisjuctiveConditions = new List<String>();
+                for (int i = 0; i < authorIDs.Count; i++)
+                {
+                    String condition = "(PaperAuthorship.AuthorID = " + "@AuthorID" + i;
+                    if (firstAuthorOnly)
+                    {
+                        condition += " AND PaperAuthorship.Precedence = 0";
+                    }
+                    condition += ")";
+                    authorshipDisjuctiveConditions.Add(condition);
+                }
+                filteringConjunctiveConditions.Add(String.Join(" OR ", authorshipDisjuctiveConditions));
+            }
+            if (publishDateFrom != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.PublishDate >= " + "@PublishDateFrom");
+            }
+            if (publishDateTo != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.PublishDate < " + "@PublishDateTo");
+            }
+            if (hasEnterprisePartnership != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.HasEnterprisePartnership = " + ((bool)hasInternationalCoAuthor ? 1 : 0));
+            }
+            if (isCollaborativeProject != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.IsCollaborativeProject = " + ((bool)isCollaborativeProject ? 1 : 0));
+            }
+            if (hasInternationalCoAuthor != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.HasInternationalCoAuthor = " + ((bool)hasInternationalCoAuthor ? 1 : 0));
+            }
+            if (peerReviewed != null)
+            {
+                filteringConjunctiveConditions.Add("Papers.PeerReviewed = " + ((bool)peerReviewed ? 1 : 0));
+            }
+
+            if (filteringConjunctiveConditions.Count > 0)
+            {
+                paperFilteringSQLTemplate += "WHERE ";
+                paperFilteringSQLTemplate += String.Join(" AND ", filteringConjunctiveConditions.Select(line => "(" + line + ")"));
+            }
+
+            String selectSQLTemplate =
+                "SELECT Papers.*, PaperAuthorship.AuthorID " +
+                "FROM Papers " +
+                "INNER JOIN PaperAuthorship ON PaperAuthorship.PaperID = Papers.PaperID " +
+                "WHERE Papers.PaperID IN(" + paperFilteringSQLTemplate + ") " +
+                "ORDER BY Papers.PaperID ASC, PaperAuthorship.Precedence ASC";
+
+            return selectSQLTemplate;
+        }
+
+        public void AddParameters(System.Data.SqlClient.SqlCommand command)
+        {
+
+            for (int i = 0; i < authorIDs.Count; i++)
+            {
+                command.Parameters.AddWithValue("AuthorID" + i, authorIDs.ElementAt(i));
+            }
+            if (publishDateFrom != null)
+            {
+                command.Parameters.AddWithValue("PublishDateFrom", publishDateFrom);
+
+            }
+            if (publishDateTo != null)
+            {
+                command.Parameters.AddWithValue("PublishDateTo", publishDateTo);
+            }
+        }
+    }
+
     public class PapersController : ApiController
     {
         static String paperPrimaryKeyColumn = "PaperID";
@@ -68,39 +209,30 @@ namespace AcademiaPortal.Controllers
         // GET: api/Papers
         public IEnumerable<Models.Paper> Get()
         {
+            PapersSearchCriteria criteria = new PapersSearchCriteria(Request.GetQueryNameValuePairs());
+
             Dictionary<Int32, Models.Paper> papersByID = new Dictionary<Int32, Models.Paper>();
-            //List<Models.Paper> papers = new List<Models.Paper>();
 
             using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
             {
                 conn.Open();
-                System.Data.SqlClient.SqlCommand retrievePapersCommand = new System.Data.SqlClient.SqlCommand("SELECT * FROM Papers", conn);
+                System.Data.SqlClient.SqlCommand retrievePapersCommand = new System.Data.SqlClient.SqlCommand(criteria.getSQLTemplate(), conn);
+                criteria.AddParameters(retrievePapersCommand);
                 System.Data.SqlClient.SqlDataReader reader = retrievePapersCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     Models.Paper paper = new Models.Paper(reader);
-                    papersByID.Add(paper.paperID, paper);
+                    if (papersByID.ContainsKey(paper.paperID))
+                    {
+                        papersByID[paper.paperID].CombineAuthorship(paper);
+                    }
+                    else
+                    {
+                        papersByID.Add(paper.paperID, paper);
+                    }
                 }
             }
-
-            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
-            {
-                conn.Open();
-                System.Data.SqlClient.SqlCommand retrievePapersCommand = new System.Data.SqlClient.SqlCommand("SELECT * FROM PaperAuthorship", conn);
-                System.Data.SqlClient.SqlDataReader reader = retrievePapersCommand.ExecuteReader();
-                while (reader.Read())
-                {
-                    papersByID[(Int32)reader["PaperID"]].authorIDs.Add((Int32)reader["AuthorID"]);
-                }
-            }
-
             return papersByID.Select(kvp => kvp.Value);
-        }
-
-        // GET: api/Papers/5
-        public string Get(int id)
-        {
-            return "value";
         }
 
         // POST: api/Papers

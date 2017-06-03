@@ -177,6 +177,15 @@ namespace AcademiaPortal.Models
             acknowledgment = (String)reader["Acknowledgment"];
             publicationConfirmationFilePath = reader["PublicationConfirmationFilePath"];
             authorIDs = new List<Int32>();
+            if (reader["AuthorID"] != null)
+            {
+                authorIDs.Add((Int32)reader["AuthorID"]);
+            }
+        }
+
+        public void CombineAuthorship(Paper paper)
+        {
+            this.authorIDs.AddRange(paper.authorIDs);
         }
     }
 }
