@@ -2,54 +2,6 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script type="text/javascript">
-        function FieldLengthValidator(field_id, min_length, max_length, events) {
-            this.min_length = (min_length == void 0) ? 1 : min_length;
-            this.max_length = max_length;
-            this.events = events || "change";
-            this.field_id = field_id;
-            this.field = $("#" + this.field_id);
-            this.registerHandler();
-        }
-        FieldLengthValidator.prototype.validate = function () {
-            if (this.min_length == void 0) this.min_length = 1;
-            var result = false;
-            var field_parent = this.field.parent();
-            var field_error_lable = this.field.parent().find("span.mdl-textfield__error");
-            if (this.field.val().length < this.min_length) {
-                field_parent.addClass('is-invalid');
-                field_error_lable.text("Required Field");
-            } else if (this.max_length && this.field.val().length > this.max_length) {
-                field_parent.addClass('is-invalid');
-                field_error_lable.text("Too Long");
-            } else {
-                field_parent.removeClass('is-invalid');
-                result = true;
-            }
-            return result;
-        }
-        FieldLengthValidator.prototype.registerHandler = function () {
-            this.field.on(this.events, this.validate.bind(this));
-        }
-
-        function FormValidator() {
-            this.validators = [];
-        }
-        FormValidator.prototype.add = function (validator) {
-            this.validators.push(validator);
-        }
-        FormValidator.prototype.validate = function () {
-            var result = true;
-            for (var i = 0; i < this.validators.length; i++) {
-                result &= this.validators[i].validate();
-            }
-            return result;
-        }
-        function getAuthorName_En(author) {
-            return [author.firstName_En, author.middleName_En, author.familyName_En].filter(function (s) { return s; }).join(" ");
-        }
-        function getAuthorName_Ja(author) {
-            return [author.familyName_Ja, author.firstName_Ja].join(" ");
-        }
         function addToAuthorTable(table_body, author) {
             var row = $("<tr>");
             var checkbox_id = "row[" + author.authorID + "]";

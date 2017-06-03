@@ -21,6 +21,9 @@
     <!-- custom style -->
     <link rel="stylesheet" href="css/acp.css" type="text/css" />
 
+    <!-- helper functions -->
+    <script type="text/javascript" src="js/acp-helper.js"></script>
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">

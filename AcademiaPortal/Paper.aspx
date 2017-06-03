@@ -8,36 +8,6 @@
     <link rel="stylesheet" href="bower_components/dropzone/dist/min/dropzone.min.css">
 
     <script type="text/javascript">
-        function getPublishDateText(paper) {
-            var d = new Date(paper.publishDate);
-            return d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月";
-        }
-        function getAuthorName_En(author) {
-            return [author.firstName_En, author.middleName_En, author.familyName_En].filter(function (s) { return s; }).join(" ");
-        }
-        function getAuthorName_Ja(author) {
-            return [author.familyName_Ja, author.firstName_Ja].filter(function (s) { return s; }).join(" ");
-        }
-        function getAuthorName(author) {
-            var name_ja = getAuthorName_Ja(author);
-            if (name_ja.length > 0) {
-                return name_ja;
-            }
-            return getAuthorName_En(author);
-        }
-        function getAuthorDescription(author) {
-            return author.email.length > 0 ?
-                author.hiragana + "<" + author.email + ">" :
-                author.hiragana;
-        }
-        function getAuthorsText(paper) {
-            var authorNames = [];
-            for (var i = 0; i < paper.authorIDs.length; i++) {
-                var author = authorsByID[paper.authorIDs[i]];
-                authorNames.push(getAuthorName_En(author));
-            }
-            return authorNames.join(", ");
-        }
         function addToPaperTable(table_body, paper) {
             var row = $("<tr>");
             var checkbox_id = "row[" + paper.paperID + "]";
@@ -351,7 +321,8 @@
                         <div class="mdl-cell mdl-cell--10-col">
                             <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <input type="text" class="mdl-textfield__input" id="title_input">
-                                <label class="mdl-textfield__label" for="title_input">Title</label>
+                                <label class="mdl-textfield__label" for="title_input">Title *</label>
+                                <span class="mdl-textfield__error">Required Field</span>
                             </div>
                         </div>
                     </div>
@@ -372,7 +343,8 @@
                         <div class="mdl-cell mdl-cell--6-col">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <input type="text" class="mdl-textfield__input" id="publication_input">
-                                <label class="mdl-textfield__label" for="publication_input">Publication</label>
+                                <label class="mdl-textfield__label" for="publication_input">Publication *</label>
+                                <span class="mdl-textfield__error">Required Field</span>
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--1-col">
@@ -389,21 +361,21 @@
                         </div>
                     </div>
                     <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--1-col">
+                        <div class="mdl-cell mdl-cell--2-col">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <input type="text" class="mdl-textfield__input" id="publish_date_year_input">
-                                <label class="mdl-textfield__label" for="publish_date_year_input">Year</label>
+                                <label class="mdl-textfield__label" for="publish_date_year_input">Year *</label>
                                 <span class="mdl-textfield__error">Invalid Year</span>
                             </div>
                         </div>
-                        <div class="mdl-cell mdl-cell--1-col">
+                        <div class="mdl-cell mdl-cell--2-col">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <input type="text" class="mdl-textfield__input" id="publish_date_month_input">
-                                <label class="mdl-textfield__label" for="document_url_input">Month</label>
+                                <label class="mdl-textfield__label" for="document_url_input">Month *</label>
                                 <span class="mdl-textfield__error">Invalid Month</span>
                             </div>
                         </div>
-                        <div class="mdl-cell mdl-cell--4-col">
+                        <div class="mdl-cell mdl-cell--2-col">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <input type="text" class="mdl-textfield__input" id="digital_object_id_input">
                                 <label class="mdl-textfield__label" for="digital_object_id_input">DOI</label>
@@ -435,6 +407,7 @@
                             </div>
                         </div>
                     </div>
+                    <p>* Required</p>
                 </div>
                 <div class="mdl-tabs__panel" id="authors-panel">
                     <div class="mdl-grid">
@@ -510,11 +483,11 @@
                     </div>
                 </div>
             </div>
-            <p>* Required</p>
+        </div>
+        <div class="mdl-dialog__actions">
+            <button id="paper_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"></button>
+            <button id="paper_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
         </div>
     </dialog>
-    <div class="mdl-dialog__actions">
-        <button id="paper_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"></button>
-        <button id="paper_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
-    </div>
+
 </asp:Content>
