@@ -8,6 +8,26 @@
     <link rel="stylesheet" href="bower_components/dropzone/dist/min/dropzone.min.css">
 
     <script type="text/javascript">
+        function AuthorshipValidator(input_id, min_author_count) {
+            this.input_id = input_id;
+            this.chip_container = $("#" + this.input_id);
+            this.min_author_count = (min_author_count == void 0) ? 1 : min_file_count;
+        }
+
+        AuthorshipValidator.prototype.validate = function () {
+            console.log("validating authorship");
+            var result = false;
+            if (getDialogSelectedAuthorCount() < this.min_author_count) {
+                console.log("invalid");
+                this.chip_container.addClass('is-invalid');
+            } else {
+                console.log("valid");
+                this.chip_container.removeClass('is-invalid');
+                result = true;
+            }
+            return result;
+        };
+
         function addToPaperTable(table_body, paper) {
             var row = $("<tr>");
             var checkbox_id = "row[" + paper.paperID + "]";
@@ -71,10 +91,16 @@
             }
             return matched_authors;
         }
-
+        function resetDialogAuthorChipsContainerLabel(is_add_chip) {
+            var current_chip_count = getDialogSelectedAuthorCount();
+            if (is_add_chip && current_chip_count === 0) {
+                $("#dialog_author_chips").empty();
+            } else if (!is_add_chip && current_chip_count === 0) {
+                $("#dialog_author_chips").append("No author selected.");
+            }
+        }
         function addToDialogSelectedAuthors(author_id) {
             var author = authorsByID[author_id];
-            dialog_selected_authors.push(author);
             var delete_button = $("<button>").addClass("mdl-chip__action").attr("type", "button")
                 .append($("<i>").addClass("material-icons").text("cancel"));
             var chip = $("<span>")
@@ -90,17 +116,13 @@
                 console.log($(this).parent());
                 removeFromDialogSelectedAuthors($(this).parent().attr("acp-primary-key"), true);
             });
+            resetDialogAuthorChipsContainerLabel(true);
             $("#dialog_author_chips").append(chip);
         }
         function removeFromDialogSelectedAuthors(author_id, update_checkbox) {
             $("#dialog_author_chips").remove("span.acp-author-chip[acp-primary-key" + author_id + "]");
-            for (var i = 0; i < dialog_selected_authors.length; i++) {
-                if (dialog_selected_authors[i].authorID === author_id) {
-                    dialog_selected_authors.splice(i, 1);
-                    break;
-                }
-            }
             $("#dialog_author_chips").find("span.acp-author-chip[acp-primary-key=" + author_id + "]").remove();
+            resetDialogAuthorChipsContainerLabel(false);
             console.log("remove triggered for id " + author_id + " and update_checkbox = " + update_checkbox);
             if (update_checkbox) {
                 var checkbox = $("#dialog_matched_author_list").find("label.acp-author-checkbox[acp-primary-key=" + author_id + "]");
@@ -108,20 +130,95 @@
                 checkbox[0].MaterialCheckbox.uncheck();
             }
         }
-        function dialogSelectedAuthorsContain(author_id) {
-            for (var i = 0; i < dialog_selected_authors.length; i++) {
-                if (dialog_selected_authors[i].authorID === author_id) {
-                    return true;
-                }
+        function getDialogSelectedAuthorIDs() {
+            var author_chips = $("#dialog_author_chips").find("span.acp-author-chip");
+            var authorIDs = [];
+            for (var i = 0; i < author_chips.length; i++) {
+                authorIDs.push(parseInt($(author_chips[i]).attr("acp-primary-key")));
             }
-            return false;
+            return authorIDs;
         }
+        function dialogSelectedAuthorsContain(author_id) {
+            return $("#dialog_author_chips").find("span.acp-author-chip[acp-primary-key=" + author_id + "]").length > 0;
+        }
+        function getDialogSelectedAuthorCount() {
+            return $("#dialog_author_chips").find("span.acp-author-chip").length;
+        }
+
+        function clearDialog() {
+            //TODO
+        }
+
+        function getDropzoneServerFileName(dropzone_id) {
+            var accepted_files = $("#" + dropzone_id)[0].dropzone.getAcceptedFiles()
+            if (accepted_files.length > 0) {
+                return accepted_files[0].server_file_name;
+            }
+            return null;
+        }
+        function getPaperFromDialog() {
+            var paper = {};
+            paper.title = $("#title_input").val();
+            paper.publicationCategory = parseInt($("#publication_category_input").val());
+            paper.publication = $("#publication_input").val();
+            paper.volume = $("#volume_input").val();
+            paper.page = $("#page_input").val();
+            paper.digitalObjectID = $("#digital_object_id_input").val();
+            paper.documentURL = $("#document_url_input").val();
+            paper.peerReviewed = $("#peer_reviewed_input").is(":checked");
+            paper.genre = parseInt($("#genre_input").val());
+            paper.presentationStyle = parseInt($("#presentation_style").val());
+            paper.hasEnterprisePartnership = $("#has_enterprise_partnership_input").is(":checked");
+            paper.hasInternationalCoAuthor = $("#has_international_co_author_input").is(":checked");
+            paper.isCollaborativeProject = $("#is_collaborative_project_input").is(":checked");
+            paper.acknowledgment = $("#acknowledgment_input").val();
+            paper.authorIDs = getDialogSelectedAuthorIDs();
+            paper.publishDate = Date.UTC(parseInt($("#publish_date_year_input").val()),
+                parseInt($("#publish_date_month_input").val()) - 1);
+            paper.documentFilePath = getDropzoneServerFileName("document_dropzone");
+            paper.videoFilePath = getDropzoneServerFileName("video_dropzone");
+            paper.packageFilePath = getDropzoneServerFileName("package_dropzone");
+            paper.publicationConfirmationFilePath = getDropzoneServerFileName("publication_confirmation_dropzone");
+
+            return paper;
+        }
+        function AddPaper() {
+            var first_invalid_field = form_validator.validateAndGetFirstError();
+            if (first_invalid_field) {
+                var first_invalid_tab_id = $("#" + first_invalid_field.input_id).closest(".mdl-tabs__panel").attr("id");
+                switchTab(first_invalid_tab_id);
+                return;
+            }
+            var paper = getPaperFromDialog();
+            console.log(paper);
+            $.ajax({
+                type: "POST",
+                url: "/api/papers",
+                data: JSON.stringify(paper),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                },
+                success: function (result) {
+                    var paper = result;
+                    console.log(paper);
+                    papers.push(paper);
+                    // TODO: do not update view
+                    addToPaperTable($("#paper_table").find("tbody"), paper);
+                    clearDialog();
+                    paper_dialog.close();
+                    $("#paper_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Paper added." });
+                }
+            });
+        }
+
 
         var papers = [];
         var authors = [];
-        var dialog_selected_authors = [];
         var authorsByID = {};
         var selected_papers = null;
+        var form_validator = new FormValidator();
 
         $(document).ready(function () {
 
@@ -133,12 +230,12 @@
                 var dialog = $("#paper_dialog");
                 dialog.find(".mdl-dialog__title").text("Add Paper");
                 $("#paper_dialog_confirm").text("Add");
-                dialog.attr("acp-paper-action", "add");
+                dialog.attr("acp-action", "add");
                 paper_dialog.showModal();
             });
             $("#paper_dialog_cancel").click(function () {
                 paper_dialog.close();
-                if ($("#paper_dialog").attr("acp-paper-action") === "edit") {
+                if ($("#paper_dialog").attr("acp-action") === "edit") {
                     clearDialog();
                 }
             });
@@ -192,6 +289,21 @@
                 }
             });
 
+            $("#paper_dialog_confirm").on("click", function () {
+                var action = $("#paper_dialog").attr("acp-action");
+                if (action === "add") {
+                    AddPaper();
+                } else if (action === "edit") {
+                    UpdatePaper();
+                }
+            });
+            form_validator.add(new FieldLengthValidator("title_input"));
+            form_validator.add(new FieldLengthValidator("publication_input"));
+            form_validator.add(new FieldIntegerRangeValidator("publish_date_year_input", 0));
+            form_validator.add(new FieldIntegerRangeValidator("publish_date_month_input", 1, 12));
+            form_validator.add(new AuthorshipValidator("dialog_author_chips"));
+            
+
             $.ajax({
                 type: "GET",
                 url: "/api/papers",
@@ -229,6 +341,10 @@
             var dropzoneDisplayServerError = function (file, response) {
                 $(file.previewElement).find('.dz-error-message').text(response.Message);
             };
+            var dropzoneSaveServerSideFileName = function (file, response) {
+                console.log(response);
+                file.server_file_name = response[0];
+            }
 
             var document_dropzone = new Dropzone("#document_dropzone", {
                 url: "/api/blob",
@@ -236,6 +352,7 @@
                 addRemoveLinks: true,
                 init: function () {
                     this.on("error", dropzoneDisplayServerError);
+                    this.on("success", dropzoneSaveServerSideFileName);
                 }
             });
             $("#document_dropzone").addClass("dropzone");
@@ -246,6 +363,7 @@
                 addRemoveLinks: true,
                 init: function () {
                     this.on("error", dropzoneDisplayServerError);
+                    this.on("success", dropzoneSaveServerSideFileName);
                 }
             });
             $("#video_dropzone").addClass("dropzone");
@@ -256,6 +374,7 @@
                 addRemoveLinks: true,
                 init: function () {
                     this.on("error", dropzoneDisplayServerError);
+                    this.on("success", dropzoneSaveServerSideFileName);
                 }
             });
             $("#package_dropzone").addClass("dropzone");
@@ -266,6 +385,7 @@
                 addRemoveLinks: true,
                 init: function () {
                     this.on("error", dropzoneDisplayServerError);
+                    this.on("success", dropzoneSaveServerSideFileName);
                 }
             });
             $("#publication_confirmation_dropzone").addClass("dropzone");
@@ -273,6 +393,10 @@
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div id="paper_snackbar" class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+    </div>
     <div class="acp-card-wide mdl-card mdl-shadow--2dp">
         <div class="mdl-card__title acp-card__actions">
             <button type="button" id="add_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Add</button>
@@ -371,23 +495,18 @@
                         <div class="mdl-cell mdl-cell--2-col">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <input type="text" class="mdl-textfield__input" id="publish_date_month_input">
-                                <label class="mdl-textfield__label" for="document_url_input">Month *</label>
+                                <label class="mdl-textfield__label" for="publish_date_month_input">Month *</label>
                                 <span class="mdl-textfield__error">Invalid Month</span>
                             </div>
                         </div>
-                        <div class="mdl-cell mdl-cell--2-col">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input type="text" class="mdl-textfield__input" id="digital_object_id_input">
-                                <label class="mdl-textfield__label" for="digital_object_id_input">DOI</label>
-                            </div>
-                        </div>
+
                         <div class="mdl-cell mdl-cell--3-col acp-cell--vertically-centered">
                             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="peer_reviewed_input">
                                 <input type="checkbox" id="peer_reviewed_input" class="mdl-checkbox__input">
                                 <span class="mdl-checkbox__label">Peer Reviewed</span>
                             </label>
                         </div>
-                        <div class="mdl-cell mdl-cell--3-col">
+                        <div class="mdl-cell mdl-cell--5-col">
                             <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
                                 <select class="mdl-selectfield__select" id="presentation_style">
                                     <option value="0">Oral Presentation</option>
@@ -396,6 +515,20 @@
                                     <option value="3">None</option>
                                 </select>
                                 <label class="mdl-selectfield__label" for="presentation_style">Presentation Style</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--9-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="document_url_input">
+                                <label class="mdl-textfield__label" for="document_url_input">Document URL</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input type="text" class="mdl-textfield__input" id="digital_object_id_input">
+                                <label class="mdl-textfield__label" for="digital_object_id_input">DOI</label>
                             </div>
                         </div>
                     </div>
@@ -428,7 +561,7 @@
                     </div>
                     <div class="mdl-grid">
                         <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
-                            <div class="acp-chip-container" id="dialog_author_chips">No author selected</div>
+                            <div class="acp-chip-container" id="dialog_author_chips">No author selected.</div>
                         </div>
                     </div>
                     <div class="mdl-grid">

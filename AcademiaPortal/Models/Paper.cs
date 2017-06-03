@@ -51,6 +51,10 @@ namespace AcademiaPortal.Models
                 this._publishDate = GetDateTime(value);
             }
         }
+        public DateTime GetPublishDate()
+        {
+            return _publishDate;
+        }
         public Object documentFilePath
         {
             get

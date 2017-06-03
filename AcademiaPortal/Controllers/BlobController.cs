@@ -53,16 +53,16 @@ namespace AcademiaPortal.Controllers
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
 
-            Trace.WriteLine("Request.Content.Headers.ContentLength="+Request.Content.Headers.ContentLength);
+            Trace.WriteLine("Request.Content.Headers.ContentLength=" + Request.Content.Headers.ContentLength);
             System.Configuration.Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
             System.Web.Configuration.HttpRuntimeSection section = config.GetSection("system.web/httpRuntime") as System.Web.Configuration.HttpRuntimeSection;
-            Trace.WriteLine("system.web/httpRuntime.MaxRequestLength"+ section.MaxRequestLength);
+            Trace.WriteLine("system.web/httpRuntime.MaxRequestLength" + section.MaxRequestLength);
 
             if (Request.Content.Headers.ContentLength > section.MaxRequestLength * 1024)
             {
                 return Task.FromResult(Request.CreateErrorResponse(HttpStatusCode.RequestEntityTooLarge, "File should be smaller than " + Math.Round(section.MaxRequestLength / 1024.0) + "MB."));
             }
-            
+
             string root = HttpContext.Current.Server.MapPath("~/App_Data");
             var provider = new CustomMultipartFormDataStreamProvider(root);
 
@@ -70,18 +70,20 @@ namespace AcademiaPortal.Controllers
             var task = Request.Content.ReadAsMultipartAsync(provider).
                 ContinueWith<HttpResponseMessage>(t =>
                 {
+                    List<String> server_side_file_names = new List<String>();
                     if (t.IsFaulted || t.IsCanceled)
                     {
                         Request.CreateErrorResponse(HttpStatusCode.InternalServerError, t.Exception);
                     }
 
-            // This illustrates how to get the file names.
-            foreach (MultipartFileData file in provider.FileData)
+                    // This illustrates how to get the file names.
+                    foreach (MultipartFileData file in provider.FileData)
                     {
                         Trace.WriteLine(file.Headers.ContentDisposition.FileName);
+                        server_side_file_names.Add(System.IO.Path.GetFileName(file.LocalFileName));
                         Trace.WriteLine("Server file path: " + file.LocalFileName);
                     }
-                    return Request.CreateResponse(HttpStatusCode.OK);
+                    return Request.CreateResponse(HttpStatusCode.OK, server_side_file_names);
                 });
 
             return task;

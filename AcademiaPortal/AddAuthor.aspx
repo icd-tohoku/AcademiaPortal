@@ -137,14 +137,14 @@
                 var dialog = $("#author_dialog");
                 dialog.find(".mdl-dialog__title").text("Add Author");
                 $("#author_dialog_confirm").text("Add");
-                dialog.attr("acp-author-action", "add");
+                dialog.attr("acp-action", "add");
 
 
                 author_dialog.showModal();
             });
             $("#author_dialog_cancel").click(function () {
                 author_dialog.close();
-                if ($("#author_dialog").attr("acp-author-action") === "edit") {
+                if ($("#author_dialog").attr("acp-action") === "edit") {
                     clearDialog();
                 }
             });
@@ -152,7 +152,7 @@
                 var dialog = $("#author_dialog");
                 dialog.find(".mdl-dialog__title").text("Edit Author");
                 $("#author_dialog_confirm").text("Update");
-                dialog.attr("acp-author-action", "edit");
+                dialog.attr("acp-action", "edit");
 
 
                 $("#family_ja_input").parent()[0].MaterialTextfield.change(selected_author.familyName_Ja);
@@ -186,7 +186,7 @@
                 }
             });
             $("#author_dialog_confirm").on("click", function () {
-                var action = $("#author_dialog").attr("acp-author-action");
+                var action = $("#author_dialog").attr("acp-action");
                 if (action === "add") {
                     AddAuthor();
                 } else if (action === "edit") {

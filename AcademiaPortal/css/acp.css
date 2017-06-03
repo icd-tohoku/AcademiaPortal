@@ -85,6 +85,9 @@ div.acp-dropzone-container {
     align-items: center;
 }
 
+.dropzone.is-invalid {
+    border: 2px solid #d50000;
+}
 /*.acp-textfield--thin.mdl-textfield {
     padding: 4px 0;
 }
@@ -92,6 +95,9 @@ div.acp-dropzone-container {
         top: 8px;
     }*/
 
+div.acp-chip-container.is-invalid {
+    color: rgb(213,0,0);
+}
 div.acp-cell--vertically-centered {
     display: -ms-flexbox;
     display: -webkit-flex;
