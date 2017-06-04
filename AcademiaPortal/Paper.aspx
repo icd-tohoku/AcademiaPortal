@@ -28,39 +28,33 @@
             return result;
         };
 
+        function initializeTable() {
+            var table = $("#paper_table");
+            var header_checkbox = table.find('thead .mdl-data-table__select input');
+            
+            
+            header_checkbox.on('change', function (event) {
+                var checkboxes = table.find('tbody .mdl-data-table__select');
+                
+                if ($(this).is(":checked")) {
+                    for (var i = 0, length = checkboxes.length; i < length; i++) {
+                
+                        checkboxes[i].MaterialCheckbox.check();
+                    }
+                } else {
+                    for (var i = 0, length = checkboxes.length; i < length; i++) {
+                        checkboxes[i].MaterialCheckbox.uncheck();
+                    }
+                }
+            })
+        }
+
         function addToPaperTable(table_body, paper) {
             var row = $("<tr>");
             var checkbox_id = "row[" + paper.paperID + "]";
             var checkbox = $("<input>").addClass("mdl-checkbox__input").attr("type", "checkbox").attr("id", checkbox_id).attr("acp-primary-key", paper.paperID);
-            var checkbox_container = $("<label>").addClass("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select").attr("for", checkbox_id)
+            var checkbox_container = $("<label>").addClass("mdl-checkbox mdl-js-checkbox mdl-data-table__select").attr("for", checkbox_id)
                 .append(checkbox);
-            checkbox.on('change', function (event) {
-                var table = $("#paper_table");
-                var checkboxes = table.find('tbody .mdl-data-table__select');
-
-                if (event.target.checked) {
-                    for (var i = 0, length = checkboxes.length; i < length; i++) {
-                        if (event.target.id != checkboxes[i].getAttribute('for')) {
-                            checkboxes[i].MaterialCheckbox.uncheck();
-                        }
-                    }
-
-                    var selected_id = parseInt(event.target.getAttribute("acp-primary-key"));
-
-                    //find the selected paper
-                    for (var i = 0; i < papers.length; i++) {
-                        if (papers[i].paperID === selected_id) {
-                            selected_paper = papers[i];
-                            break;
-                        }
-                    }
-
-                    $("#edit_paper_button").prop("disabled", false);
-                } else {
-                    selected_paper = null;
-                    $("#edit_paper_button").prop("disabled", true);
-                }
-            })
             componentHandler.upgradeElements(checkbox_container[0]);
 
             var checkbox_cell = $("<td>").append(checkbox_container);
@@ -320,7 +314,7 @@
         var main_validator = new FormValidator();
 
         $(document).ready(function () {
-
+            initializeTable();
             var paper_dialog = $("#paper_dialog")[0];
             if (!paper_dialog.showModal) {
                 dialogPolyfill.registerDialog(paper_dialog);
@@ -338,6 +332,7 @@
                     clearDialog();
                 }
             });
+
             $("#author_dialog_search").on("keyup", function (event) {
                 var search_text = $(this).val();
                 var author_list = $("#dialog_matched_author_list");
@@ -693,7 +688,11 @@
             <table id="paper_table" class="acp-table--no-scroll mdl-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th>
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-data-table__select" for="table-header">
+                                <input type="checkbox" id="table-header" class="mdl-checkbox__input" />
+                            </label>
+                        </th>
                         <th class="mdl-data-table__cell--non-numeric">Title</th>
                         <th class="mdl-data-table__cell--non-numeric">Authors</th>
                         <th class="mdl-data-table__cell--non-numeric">Published In</th>
