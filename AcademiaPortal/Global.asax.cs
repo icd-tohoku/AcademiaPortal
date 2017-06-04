@@ -4,9 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
-using System.Web.Mvc;
 using System.Web.Routing;
-using System.Web.Optimization;
 using System.Web.Http;
 
 namespace AcademiaPortal
@@ -58,13 +56,8 @@ namespace AcademiaPortal
                 CdnSupportsSecureConnection = true,
                 LoadSuccessExpression = "window.jQuery"
             });
-
-            AreaRegistration.RegisterAllAreas();
-
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            
             WebApiConfig.Register(GlobalConfiguration.Configuration);
-            //RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
         protected void Application_Error(object sedner, EventArgs e)
         {
