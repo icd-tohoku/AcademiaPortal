@@ -11,7 +11,7 @@ namespace AcademiaPortal.Controllers
     {
         public List<int> authorIDs;
         public Boolean firstAuthorOnly;
-        public Boolean authorsMatchAny;
+        public Boolean authorConjunctiveMatch;
 
         public DateTime? publishDateFrom;
         public DateTime? publishDateTo;
@@ -28,6 +28,8 @@ namespace AcademiaPortal.Controllers
         public PapersSearchCriteria(IEnumerable<KeyValuePair<String, String>> queryParams)
         {
             authorIDs = new List<int>();
+            firstAuthorOnly = false;
+            authorConjunctiveMatch = false;
             foreach (var queryParam in queryParams)
             {
                 String key = queryParam.Key;
@@ -50,10 +52,10 @@ namespace AcademiaPortal.Controllers
                             firstAuthorOnly = parsedBoolean;
                         }
                         break;
-                    case "authorsMatchAny":
+                    case "authorConjunctiveMatch":
                         if (Boolean.TryParse(value, out parsedBoolean))
                         {
-                            authorsMatchAny = parsedBoolean;
+                            authorConjunctiveMatch = parsedBoolean;
                         }
                         break;
                     case "publishDateFrom":
@@ -297,7 +299,12 @@ namespace AcademiaPortal.Controllers
                     }
                 }
             }
-            return papersByID.Select(kvp => kvp.Value);
+            var papers = papersByID.Select(kvp => kvp.Value);
+            if (criteria.authorConjunctiveMatch)
+            {
+                papers = papers.Where(paper => criteria.authorIDs.Except(paper.authorIDs).Count() == 0);
+            }
+            return papers;
         }
 
         // POST: api/Papers

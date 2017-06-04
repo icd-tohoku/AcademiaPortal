@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/AcademiaPortal.Master" AutoEventWireup="true" CodeBehind="Paper.aspx.cs" Inherits="AcademiaPortal.Paper" %>
+﻿<%@ Page Title="ICD Academia Portal - Author" Language="C#" MasterPageFile="~/AcademiaPortal.Master" AutoEventWireup="true" CodeBehind="Paper.aspx.cs" Inherits="AcademiaPortal.Paper" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script defer src="bower_components/mdl-select-component/mdl-selectfield.min.js"></script>
@@ -31,14 +31,14 @@
         function initializeTable() {
             var table = $("#paper_table");
             var header_checkbox = table.find('thead .mdl-data-table__select input');
-            
-            
+
+
             header_checkbox.on('change', function (event) {
                 var checkboxes = table.find('tbody .mdl-data-table__select');
-                
+
                 if ($(this).is(":checked")) {
                     for (var i = 0, length = checkboxes.length; i < length; i++) {
-                
+
                         checkboxes[i].MaterialCheckbox.check();
                     }
                 } else {
@@ -295,13 +295,27 @@
             if ($("#main_has_enterprise_partnership_toggle").is(":checked")) {
                 criteria.hasEnterprisePartnership = $("#main_has_enterprise_partnership_input").is(":checked");
             }
-
+            if ($("#main_has_international_coauthor_toggle").is(":checked")) {
+                criteria.hasInternationalCoAuthor = $("#main_has_international_coauthor_input").is(":checked");
+            }
+            if ($("#main_is_collaborative_project_toggle").is(":checked")) {
+                criteria.isCollaborativeProject = $("#main_is_collaborative_project_input").is(":checked");
+            }
+            if ($("#main_peer_reviewed_toggle").is(":checked")) {
+                criteria.peerReviewed = $("#main_peer_reviewed_input").is(":checked");
+            }
             if ($("#main_publication_category_toggle").is(":checked")) {
                 criteria.publicationCategory = parseInt($("#main_publication_category_input").val());
             }
+            if ($("#main_presentation_style_toggle").is(":checked")) {
+                criteria.presentationStyle = parseInt($("#main_presentation_style_input").val());
+            }
+            if ($("#main_genre_toggle").is(":checked")) {
+                criteria.genre = parseInt($("#main_genre_input").val());
+            }
 
             criteria.firstAuthorOnly = $("#main_first_author_input").is(":checked");
-
+            criteria.authorConjunctiveMatch = $("#main_author_matching_conjunction").is(":checked");
             return criteria;
         }
 
@@ -473,30 +487,88 @@
 
             $("#main_publish_date_toggle").on('change', function (event) {
                 if ($(this).is(":checked")) {
-                    $("#main_publish_date_from_input").prop("disabled", false);
-                    $("#main_publish_date_to_input").prop("disabled", false);
+                    $("#main_publish_date_from_input").parent()[0].MaterialTextfield.enable()
+                    $("#main_publish_date_to_input").parent()[0].MaterialTextfield.enable()
                 } else {
-                    $("#main_publish_date_from_input").prop("disabled", true);
-                    $("#main_publish_date_to_input").prop("disabled", true);
+                    $("#main_publish_date_from_input").parent()[0].MaterialTextfield.disable()
+                    $("#main_publish_date_to_input").parent()[0].MaterialTextfield.disable()
                 }
             });
 
             $("#main_has_enterprise_partnership_toggle").on('change', function (event) {
                 if ($(this).is(":checked")) {
-                    $("#main_has_enterprise_partnership_input").prop("disabled", false);
+                    $("#main_has_enterprise_partnership_input").parent()[0].MaterialCheckbox.enable()
                 } else {
-                    $("#main_has_enterprise_partnership_input").prop("disabled", true);
+                    $("#main_has_enterprise_partnership_input").parent()[0].MaterialCheckbox.disable()
+                }
+            });
+
+
+            $("#main_has_international_coauthor_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_has_international_coauthor_input").parent()[0].MaterialCheckbox.enable()
+                } else {
+                    $("#main_has_international_coauthor_input").parent()[0].MaterialCheckbox.disable()
+                }
+            });
+
+            $("#main_is_collaborative_project_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_is_collaborative_project_input").parent()[0].MaterialCheckbox.enable()
+                } else {
+                    $("#main_is_collaborative_project_input").parent()[0].MaterialCheckbox.disable()
+                }
+            });
+
+            $("#main_peer_reviewed_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_peer_reviewed_input").parent()[0].MaterialCheckbox.enable()
+                } else {
+                    $("#main_peer_reviewed_input").parent()[0].MaterialCheckbox.disable()
                 }
             });
 
             $("#main_publication_category_toggle").on('change', function (event) {
                 if ($(this).is(":checked")) {
-                    $("#main_publication_category_input").prop("disabled", false);
+                    $("#main_publication_category_input").parent()[0].MaterialSelectfield.enable();
                 } else {
-                    $("#main_publication_category_input").prop("disabled", true);
+                    $("#main_publication_category_input").parent()[0].MaterialSelectfield.disable();
                 }
             });
 
+            $("#main_presentation_style_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_presentation_style_input").parent()[0].MaterialSelectfield.enable();
+                } else {
+                    $("#main_presentation_style_input").parent()[0].MaterialSelectfield.disable();
+                }
+            });
+
+
+            $("#main_genre_toggle").on('change', function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_genre_input").parent()[0].MaterialSelectfield.enable();
+                } else {
+                    $("#main_genre_input").parent()[0].MaterialSelectfield.disable();
+                }
+            });
+
+
+
+
+            $("#main_first_author_input").on("change", function (event) {
+                if ($(this).is(":checked")) {
+                    $("#main_author_matching_disjunction").parent()[0].MaterialRadio.check();
+                    $("#main_author_matching_conjunction").parent()[0].MaterialRadio.uncheck();
+                    $("#main_author_matching_conjunction").parent()[0].MaterialRadio.disable();
+                } else {
+                    $("#main_author_matching_conjunction").parent()[0].MaterialRadio.enable();
+                }
+            });
+
+            var current_year = (new Date()).getUTCFullYear();
+            $("#main_publish_date_from_input").val(current_year);
+            $("#main_publish_date_to_input").val(current_year);
 
             $("#search_paper_button").on("click", function () {
                 if (!main_validator.validate()) {
@@ -578,105 +650,191 @@
         <div class="mdl-snackbar__text"></div>
         <button class="mdl-snackbar__action" type="button"></button>
     </div>
-    <div class="acp-card-wide mdl-card mdl-shadow--2dp">
-        <div class="acp-card-subcomponent--full-width mdl-card__supporting-text">
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--6-col mdl-shadow--2dp">
-                    <div class="mdl-grid acp-cell--vertically-centered">
-                        <div class="mdl-cell mdl-cell--6-col">
-                            <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield">
-                                <input type="text" class="mdl-textfield__input" id="author_main_search">
-                                <label class="mdl-textfield__label" for="author_main_search">Search for authors...</label>
-                            </div>
-                        </div>
-                        <div class="mdl-cell mdl-cell--3-col">
-                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_first_author_input">
-                                <input type="checkbox" id="main_first_author_input" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">First Author</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
-                            <div class="acp-scrollable-list">
-                                <ul class="mdl-list" id="main_matched_author_list">
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
-                            <div class="acp-chip-container" id="main_author_chips">No author selected.</div>
-                        </div>
+    <div class="mdl-grid mdl-grid--no-spacing">
+        <div class="mdl-cell mdl-cell--4-col">
+            <div class="mdl-grid acp-cell--vertically-centered">
+                <div class="mdl-cell mdl-cell--6-col">
+                    <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield">
+                        <input type="text" class="mdl-textfield__input" id="author_main_search">
+                        <label class="mdl-textfield__label" for="author_main_search">Search for authors...</label>
                     </div>
                 </div>
-                <div class="mdl-cell mdl-cell--6-col mdl-shadow--2dp">
-                    <div class="mdl-grid acp-cell--vertically-centered">
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_publish_date_toggle">
-                                <input type="checkbox" id="main_publish_date_toggle" class="mdl-switch__input">
-                                <span class="mdl-switch__label">Publish Date</span>
-                            </label>
-                        </div>
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_first_author_input">
+                        <input type="checkbox" id="main_first_author_input" class="mdl-checkbox__input">
+                        <span class="mdl-checkbox__label">First Author</span>
+                    </label>
+                </div>
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="main_author_matching_disjunction">
+                        <input type="radio" id="main_author_matching_disjunction" class="mdl-radio__button" name="main_author_matching" value="2" checked>
+                        <span class="mdl-radio__label">Match Any</span>
+                    </label>
+                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="main_author_matching_conjunction">
+                        <input type="radio" id="main_author_matching_conjunction" class="mdl-radio__button" name="main_author_matching" value="1">
+                        <span class="mdl-radio__label">Match All</span>
+                    </label>
 
-                        <div class="mdl-cell mdl-cell--3-col">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input type="text" class="mdl-textfield__input" id="main_publish_date_from_input" disabled>
-                                <label class="mdl-textfield__label" for="main_publish_date_from_input">From Year</label>
-                                <span class="mdl-textfield__error">Invalid Year</span>
-                            </div>
-                        </div>
-                        <div class="mdl-cell mdl-cell--3-col">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input type="text" class="mdl-textfield__input" id="main_publish_date_to_input" disabled>
-                                <label class="mdl-textfield__label" for="main_publish_date_to_input">To Year</label>
-                                <span class="mdl-textfield__error">Invalid Year</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mdl-grid acp-cell--vertically-centered">
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_has_enterprise_partnership_toggle">
-                                <input type="checkbox" id="main_has_enterprise_partnership_toggle" class="mdl-switch__input">
-                                <span class="mdl-switch__label">Enterprise Partnership</span>
-                            </label>
-                        </div>
-
-                        <div class="mdl-cell mdl-cell--3-col">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_has_enterprise_partnership_input">
-                                    <input type="checkbox" id="main_has_enterprise_partnership_input" class="mdl-checkbox__input" disabled>
-                                    <span class="mdl-checkbox__label"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mdl-grid acp-cell--vertically-centered">
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_publication_category_toggle">
-                                <input type="checkbox" id="main_publication_category_toggle" class="mdl-switch__input">
-                                <span class="mdl-switch__label"></span>
-                            </label>
-                        </div>
-                        <div class="mdl-cell mdl-cell--8-col">
-                            <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
-                                <select class="mdl-selectfield__select" id="main_publication_category_input" disabled>
-                                    <option value="0">Journal</option>
-                                    <option value="1">International Conference</option>
-                                    <option value="2">Domestic Conference</option>
-                                    <option value="3">Review</option>
-                                    <option value="4">English Journal</option>
-                                    <option value="5">Other</option>
-                                </select>
-                                <label class="mdl-selectfield__label" for="publication_category_input">Publication Category</label>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="mdl-grid mdl-grid--no-spacing">
+                <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+                    <div class="acp-scrollable-list">
+                        <ul class="mdl-list" id="main_matched_author_list">
+                        </ul>
                     </div>
                 </div>
             </div>
+            <div class="mdl-grid mdl-grid--no-spacing">
+                <div class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+                    <div class="acp-chip-container" id="main_author_chips">No author selected.</div>
+                </div>
+            </div>
         </div>
-        <div class="mdl-card__title acp-card__actions">
-            <button type="button" id="search_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Search</button>
+        <div class="mdl-cell mdl-cell--8-col">
+            <div class="mdl-grid acp-cell--vertically-centered">
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_publish_date_toggle">
+                        <input type="checkbox" id="main_publish_date_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label">Publish Date</span>
+                    </label>
+                </div>
+
+                <div class="mdl-cell mdl-cell--2-col">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input type="text" class="mdl-textfield__input" id="main_publish_date_from_input" disabled>
+                        <label class="mdl-textfield__label" for="main_publish_date_from_input">From Year</label>
+                        <span class="mdl-textfield__error">Invalid Year</span>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--2-col">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input type="text" class="mdl-textfield__input" id="main_publish_date_to_input" disabled>
+                        <label class="mdl-textfield__label" for="main_publish_date_to_input">To Year</label>
+                        <span class="mdl-textfield__error">Invalid Year</span>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--1-col"></div>
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_publication_category_toggle">
+                        <input type="checkbox" id="main_publication_category_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label"></span>
+                    </label>
+                </div>
+                <div class="mdl-cell mdl-cell--3-col">
+                    <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+                        <select class="mdl-selectfield__select" id="main_publication_category_input" disabled>
+                            <option value="0">Journal</option>
+                            <option value="1">International Conference</option>
+                            <option value="2">Domestic Conference</option>
+                            <option value="3">Review</option>
+                            <option value="4">English Journal</option>
+                            <option value="5">Other</option>
+                        </select>
+                        <label class="mdl-selectfield__label" for="main_publication_category_input">Publication Category</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mdl-grid acp-cell--vertically-centered">
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_has_enterprise_partnership_toggle">
+                        <input type="checkbox" id="main_has_enterprise_partnership_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label">Enterprise Partnership</span>
+                    </label>
+                </div>
+
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_has_enterprise_partnership_input">
+                        <input type="checkbox" id="main_has_enterprise_partnership_input" class="mdl-checkbox__input" disabled>
+                        <span class="mdl-checkbox__label"></span>
+                    </label>
+                </div>
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_has_international_coauthor_toggle">
+                        <input type="checkbox" id="main_has_international_coauthor_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label">International Co-author</span>
+                    </label>
+                </div>
+
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_has_international_coauthor_input">
+                        <input type="checkbox" id="main_has_international_coauthor_input" class="mdl-checkbox__input" disabled>
+                        <span class="mdl-checkbox__label"></span>
+                    </label>
+                </div>
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_is_collaborative_project_toggle">
+                        <input type="checkbox" id="main_is_collaborative_project_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label">Collaborative Project</span>
+                    </label>
+                </div>
+
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_is_collaborative_project_input">
+                        <input type="checkbox" id="main_is_collaborative_project_input" class="mdl-checkbox__input" disabled>
+                        <span class="mdl-checkbox__label"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="mdl-grid acp-cell--vertically-centered">
+                <div class="mdl-cell mdl-cell--3-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_peer_reviewed_toggle">
+                        <input type="checkbox" id="main_peer_reviewed_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label">Peer Reviewed</span>
+                    </label>
+                </div>
+
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="main_peer_reviewed_input">
+                        <input type="checkbox" id="main_peer_reviewed_input" class="mdl-checkbox__input" disabled>
+                        <span class="mdl-checkbox__label"></span>
+                    </label>
+                </div>
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_presentation_style_toggle">
+                        <input type="checkbox" id="main_presentation_style_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label"></span>
+                    </label>
+                </div>
+
+                <div class="mdl-cell mdl-cell--3-col">
+                    <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+
+
+                        <select class="mdl-selectfield__select" id="main_presentation_style_input" disabled>
+                            <option value="0">Oral Presentation</option>
+                            <option value="1">Poster Presentation</option>
+                            <option value="2">Demonstration</option>
+                            <option value="3">None</option>
+                        </select>
+                        <label class="mdl-selectfield__label" for="main_presentation_style_input">Presentation Style</label>
+
+
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--1-col">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="main_genre_toggle">
+                        <input type="checkbox" id="main_genre_toggle" class="mdl-switch__input">
+                        <span class="mdl-switch__label"></span>
+                    </label>
+                </div>
+                <div class="mdl-cell mdl-cell--3-col">
+                    <div class="mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label">
+                        <select class="mdl-selectfield__select" id="main_genre_input" disabled>
+                            <option value="0">Long Paper</option>
+                            <option value="1">Short Paper</option>
+                            <option value="2">Abstract</option>
+                            <option value="3">Other</option>
+                        </select>
+                        <label class="mdl-selectfield__label" for="main_genre_input">Genre</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mdl-grid acp-cell--vertically-centered">
+                <div class="mdl-cell mdl-cell--3-col">
+                    <button type="button" id="search_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Search</button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="acp-card-wide mdl-card mdl-shadow--2dp">
@@ -908,5 +1066,4 @@
             <button id="paper_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
         </div>
     </dialog>
-
 </asp:Content>

@@ -4,6 +4,11 @@
     width: auto;
 }
 
+.acp-card-wider.mdl-card {
+    width: 80%;
+}
+
+
 /* TODO: merge the following two*/
 
 .acp-card__supporting-text.mdl-card__supporting-text {
@@ -98,6 +103,7 @@ div.acp-dropzone-container {
 div.acp-chip-container.is-invalid {
     color: rgb(213,0,0);
 }
+
 div.acp-cell--vertically-centered {
     display: -ms-flexbox;
     display: -webkit-flex;
@@ -106,7 +112,17 @@ div.acp-cell--vertically-centered {
     -ms-flex-align: center;
     align-items: center;
 }
-dialog.acp-fit-form.mdl-dialog {
+
+span.acp-span--vertically-centered {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+dialog .acp-fit-form.mdl-dialog {
     width: 480px;
     /* conflicts with dialog-polyfill: fails to hide */
     /*
@@ -161,6 +177,3 @@ table .acp-table {
         height: 80vh;
         display: block;
     }
-
-
-    

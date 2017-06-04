@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Add Author" Language="C#" MasterPageFile="~/AcademiaPortal.Master" AutoEventWireup="true" CodeBehind="AddAuthor.aspx.cs" Inherits="AcademiaPortal.AddAuthor" %>
+﻿<%@ Page Title="ICD Academia Portal - Author" Language="C#" MasterPageFile="~/AcademiaPortal.Master" AutoEventWireup="true" CodeBehind="Author.aspx.cs" Inherits="AcademiaPortal.AddAuthor" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script type="text/javascript">
@@ -6,7 +6,7 @@
             var row = $("<tr>");
             var checkbox_id = "row[" + author.authorID + "]";
             var checkbox = $("<input>").addClass("mdl-checkbox__input").attr("type", "checkbox").attr("id", checkbox_id).attr("acp-primary-key", author.authorID);
-            var checkbox_container = $("<label>").addClass("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select").attr("for", checkbox_id)
+            var checkbox_container = $("<label>").addClass("mdl-checkbox mdl-js-checkbox mdl-data-table__select").attr("for", checkbox_id)
                 .append(checkbox);
             checkbox.on('change', function (event) {
                 var table = $("#author_2_table");
@@ -208,7 +208,7 @@
             <button type="button" id="edit_author_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary" disabled>Edit</button>
         </div>
         <div class="acp-card__supporting-text mdl-card__supporting-text">
-            <table id="author_2_table" class="acp-table mdl-data-table mdl-shadow--2dp">
+            <table id="author_2_table" class="mdl-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
                         <th></th>
