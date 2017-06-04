@@ -115,13 +115,9 @@
     <Content Include="Content\Site.css" />
     <Content Include="css\acp.css" />
     <Content Include="css\dialog-polyfill.css" />
-    <Content Include="AuthorListJson.aspx" />
-    <Content Include="Default.aspx" />
-    <Content Include="EditPaper.aspx" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="js\acp-helper.js" />
     <Content Include="js\dialog-polyfill.js" />
-    <Content Include="NewSubmission.aspx" />
     <Content Include="packages.config" />
     <Content Include="AcademiaPortal.Master" />
     <Content Include="Scripts\bootstrap.js" />
@@ -153,9 +149,6 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="Paper.aspx" />
-    <Content Include="PlayMovie.aspx" />
-    <Content Include="SearchSubmissions.aspx" />
-    <Content Include="Submissions.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -177,23 +170,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="AuthorListJson.aspx.cs">
-      <DependentUpon>AuthorListJson.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AuthorListJson.aspx.designer.cs">
-      <DependentUpon>AuthorListJson.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\AuthorsController.cs" />
     <Compile Include="Controllers\BlobController.cs" />
     <Compile Include="Controllers\PapersController.cs" />
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Paper.cs" />
     <Compile Include="Paper.aspx.cs">
@@ -203,50 +182,13 @@
     <Compile Include="Paper.aspx.designer.cs">
       <DependentUpon>Paper.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SearchSubmissions.aspx.cs">
-      <DependentUpon>SearchSubmissions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="SearchSubmissions.aspx.designer.cs">
-      <DependentUpon>SearchSubmissions.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="App_Code\Database.cs" />
-    <Compile Include="App_Code\Author.cs" />
-    <Compile Include="App_Code\Submission.cs" />
-    <Compile Include="EditPaper.aspx.cs">
-      <DependentUpon>EditPaper.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditPaper.aspx.designer.cs">
-      <DependentUpon>EditPaper.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="NewSubmission.aspx.cs">
-      <DependentUpon>NewSubmission.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="NewSubmission.aspx.designer.cs">
-      <DependentUpon>NewSubmission.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PlayMovie.aspx.cs">
-      <DependentUpon>PlayMovie.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PlayMovie.aspx.designer.cs">
-      <DependentUpon>PlayMovie.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Submissions.aspx.cs">
-      <DependentUpon>Submissions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Submissions.aspx.designer.cs">
-      <DependentUpon>Submissions.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Code\" />
     <Folder Include="App_Data\" />
     <Folder Include="Views\Blob\" />
   </ItemGroup>
