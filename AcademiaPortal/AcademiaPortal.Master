@@ -1,0 +1,58 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="AcademiaPortal.master.cs" Inherits="AcademiaPortal.AcademiaPortal" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title></title>
+
+    <!-- Material Design Lite -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-orange.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- dialog-polyfill -->
+    <script type="text/javascript" src="bower_components/dialog-polyfill/dialog-polyfill.js"></script>
+    <link rel="stylesheet" href="bower_components/dialog-polyfill/dialog-polyfill.css" type="text/css" />
+
+    <!-- custom style -->
+    <link rel="stylesheet" href="css/acp.css" type="text/css" />
+
+    <!-- helper functions -->
+    <script type="text/javascript" src="js/acp-helper.js"></script>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <span class="mdl-layout-title">ICD Academia Portal</span>
+            </div>
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                <a href="Paper.aspx" class="mdl-layout__tab">Papers</a>
+                <a href="Author.aspx" class="mdl-layout__tab">Authors</a>
+            </div>
+        </header>
+        <main class="mdl-layout__content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+            <!-- footer inside main so that it is not always on top -->
+            <footer class="mdl-mini-footer">
+                <div class="mdl-mini-footer__left-section">
+                    <div class="mdl-logo">Interactive Content Design Lab.</div>
+                    <ul class="mdl-mini-footer__link-list">
+                        <li><a href="VersionHistory.aspx">Version History</a></li>
+                    </ul>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>

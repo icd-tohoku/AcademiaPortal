@@ -1,0 +1,179 @@
+﻿/* acp stands for ACademic Portal */
+/* override material style */
+.acp-card-wide.mdl-card {
+    width: auto;
+}
+
+.acp-card-wider.mdl-card {
+    width: 80%;
+}
+
+
+/* TODO: merge the following two*/
+
+.acp-card__supporting-text.mdl-card__supporting-text {
+    width: auto;
+}
+
+.acp-card-subcomponent--full-width {
+    width: auto;
+}
+
+.acp-textfield--full-width.mdl-textfield {
+    width: 100%;
+}
+
+.acp-card__actions {
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+    .acp-card__actions > * {
+        margin-left: 8px;
+        height: 36px;
+    }
+
+        .acp-card__actions > *:first-child {
+            margin-left: 0;
+        }
+
+div.acp-scrollable-list {
+    height: 150px;
+    overflow-y: auto;
+}
+
+li.acp-list__item--two-line--thin.mdl-list__item--two-line {
+    padding: 8px;
+    height: 52px;
+    min-height: initial;
+}
+
+div.acp-chip-container {
+    color: rgba(0,0,0,.26);
+    font-size: 16px;
+    padding: 8px;
+    overflow-y: auto;
+    display: flex;
+    min-height: 36px;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+    div.acp-chip-container > * {
+        margin-right: 4px;
+    }
+
+div.acp-dropzone-container {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.dropzone.is-invalid {
+    border: 2px solid #d50000;
+}
+/*.acp-textfield--thin.mdl-textfield {
+    padding: 4px 0;
+}
+    .acp-textfield--thin.mdl-textfield label.mdl-textfield__label {
+        top: 8px;
+    }*/
+
+div.acp-chip-container.is-invalid {
+    color: rgb(213,0,0);
+}
+
+div.acp-cell--vertically-centered {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+span.acp-span--vertically-centered {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+dialog.acp-fit-form.mdl-dialog {
+    width: 480px;
+    /* conflicts with dialog-polyfill: fails to hide */
+    /*
+        display: inline-block;
+    */
+    /* fit-content not supported in IE*/
+    /*
+        width: -moz-fit-content;
+        width: -webkit-fit-content;
+        width: fit-content;
+    */
+}
+
+dialog.acp-wide-form.mdl-dialog {
+    width: 780px;
+}
+
+.mdl-data-table .acp-data-table__cell--multiline {
+    white-space: normal;
+}
+
+.mdl-data-table .acp-data-table__primary-key {
+    display: none;
+}
+
+/* reference for table: http://stackoverflow.com/a/36004018 */
+table.acp-table {
+    display: table;
+}
+
+    table.acp-table thead,
+    table.acp-table tbody {
+        width: 100%;
+    }
+
+    table.acp-table tr {
+        width: 100%;
+        text-align: left;
+        display: table;
+        table-layout: fixed;
+    }
+
+    table.acp-table thead {
+        overflow-y: scroll;
+        display: table;
+        table-layout: fixed;
+        width: calc(100% - 16px); /* assuming scrollbar width as 16px */
+    }
+
+    table.acp-table tbody {
+        overflow: auto;
+        height: 80vh;
+        display: block;
+    }

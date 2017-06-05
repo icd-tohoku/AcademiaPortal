@@ -1,0 +1,6 @@
+﻿## [0.1.0] - 2017-06-04
+### Added
+- Tons of UI improvements.
+- Database fields: "Has Enterprise Partnership", "Has International Co-Author", "Is Collaborative Project".
+### Changed
+- Applied Material Design Lite to the site.
