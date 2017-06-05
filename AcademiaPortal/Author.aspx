@@ -154,13 +154,12 @@
                 $("#author_dialog_confirm").text("Update");
                 dialog.attr("acp-action", "edit");
 
-
-                $("#family_ja_input").parent()[0].MaterialTextfield.change(selected_author.familyName_Ja);
-                $("#first_ja_input").parent()[0].MaterialTextfield.change(selected_author.firstName_Ja);
-                $("#hiragana_ja_input").parent()[0].MaterialTextfield.change(selected_author.hiragana);
-                $("#family_en_input").parent()[0].MaterialTextfield.change(selected_author.familyName_En);
-                $("#middle_en_input").parent()[0].MaterialTextfield.change(selected_author.middleName_En);
-                $("#first_en_input").parent()[0].MaterialTextfield.change(selected_author.firstName_En);
+                changeMaterialTextfieldValue("family_ja_input", selected_author.familyName_Ja);
+                changeMaterialTextfieldValue("first_ja_input", selected_author.firstName_Ja);
+                changeMaterialTextfieldValue("hiragana_ja_input", selected_author.hiragana);
+                changeMaterialTextfieldValue("family_en_input", selected_author.familyName_En);
+                changeMaterialTextfieldValue("middle_en_input", selected_author.middleName_En);
+                changeMaterialTextfieldValue("first_en_input", selected_author.firstName_En);
                 author_dialog.showModal();
             })
 

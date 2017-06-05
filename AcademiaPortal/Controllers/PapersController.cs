@@ -260,7 +260,9 @@ namespace AcademiaPortal.Controllers
 
         public static String GetInsertPaperAuthorshipSQLTemplate(int author_count)
         {
-            String sqlTemplate = "INSERT INTO PaperAuthorship" +
+            String sqlTemplate = "DELETE FROM PaperAuthorship WHERE " +
+                paperAuthorshipColumns[0] + " = @" + paperAuthorshipColumns[0] + "; " +
+                "INSERT INTO PaperAuthorship" +
                 "(" + String.Join(",", paperAuthorshipColumns) + ")" +
                                         "VALUES ";
             List<String> rowTemplates = new List<String>();
@@ -339,27 +341,66 @@ namespace AcademiaPortal.Controllers
                     paper.paperID = (int)insertPaperCommand.ExecuteScalar();
                 }
             }
-            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
-            {
-                conn.Open();
-                String insertPaperAuthorshipSQLTemplate = GetInsertPaperAuthorshipSQLTemplate(paper.authorIDs.Count);
-                using (System.Data.SqlClient.SqlCommand insertPaperAuthorshipCommand = new System.Data.SqlClient.SqlCommand(insertPaperAuthorshipSQLTemplate, conn))
-                {
-                    insertPaperAuthorshipCommand.Parameters.AddWithValue(paperAuthorshipColumns[0], paper.paperID);
-                    for (int i = 0; i < paper.authorIDs.Count; i++)
-                    {
-                        Int32 authorID = paper.authorIDs.ElementAt(i);
-                        insertPaperAuthorshipCommand.Parameters.AddWithValue(paperAuthorshipColumns[1] + i, authorID);
-                    }
-                    insertPaperAuthorshipCommand.ExecuteNonQuery();
-                }
-            }
+            updatePaperAuthorship(paper.paperID, paper.authorIDs);
+
             return Ok(paper);
         }
 
-        // PUT: api/Papers/5
-        public void Put(int id, [FromBody]string value)
+        // PUT api/Papers/5
+        public IHttpActionResult Put(int id, [FromBody]Models.Paper paper)
         {
+            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
+            {
+                conn.Open();
+
+                using (System.Data.SqlClient.SqlCommand updatePaperCommand = new System.Data.SqlClient.SqlCommand(updatePaperSQLTemplate, conn))
+                {
+
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[0], paper.title);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[1], paper.publicationCategory);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[2], paper.publication);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[3], paper.volume);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[4], paper.page);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[5], paper.GetPublishDate());
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[6], paper.digitalObjectID);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[7], paper.documentURL);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[8], paper.peerReviewed);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[9], paper.genre);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[10], paper.presentationStyle);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[11], paper.documentFilePath);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[12], paper.videoFilePath);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[13], paper.packageFilePath);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[14], paper.hasEnterprisePartnership);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[15], paper.hasInternationalCoAuthor);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[16], paper.isCollaborativeProject);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[17], paper.acknowledgment);
+                    updatePaperCommand.Parameters.AddWithValue(paperColumns[18], paper.publicationConfirmationFilePath);
+                    updatePaperCommand.Parameters.AddWithValue(paperPrimaryKeyColumn, id);
+
+                    updatePaperCommand.ExecuteNonQuery();
+                }
+            }
+            updatePaperAuthorship(id, paper.authorIDs);
+            return Ok(paper);
+        }
+
+        protected int updatePaperAuthorship(int id, List<int> authorIDs)
+        {
+            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
+            {
+                conn.Open();
+                String insertPaperAuthorshipSQLTemplate = GetInsertPaperAuthorshipSQLTemplate(authorIDs.Count);
+                using (System.Data.SqlClient.SqlCommand insertPaperAuthorshipCommand = new System.Data.SqlClient.SqlCommand(insertPaperAuthorshipSQLTemplate, conn))
+                {
+                    insertPaperAuthorshipCommand.Parameters.AddWithValue(paperAuthorshipColumns[0], id);
+                    for (int i = 0; i < authorIDs.Count; i++)
+                    {
+                        Int32 authorID = authorIDs.ElementAt(i);
+                        insertPaperAuthorshipCommand.Parameters.AddWithValue(paperAuthorshipColumns[1] + i, authorID);
+                    }
+                    return insertPaperAuthorshipCommand.ExecuteNonQuery();
+                }
+            }
         }
 
         // DELETE: api/Papers/5

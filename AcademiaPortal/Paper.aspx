@@ -28,10 +28,34 @@
             return result;
         };
 
+        function getSelectedPapers() {
+            var table = $("#paper_table");
+            var checked_checkboxes = table.find('tbody .mdl-data-table__select .mdl-checkbox__input:checked');
+            var selected_papers = [];
+            for (var i = 0; i < checked_checkboxes.length; i++) {
+                var paper_id = parseInt(checked_checkboxes[i].getAttribute('acp-primary-key'));
+                selected_papers.push(papersByID[paper_id]);
+            }
+            return selected_papers;
+        }
+
+        function updatePaperActionButtons() {
+            var edit_paper_button = $("#edit_paper_button")[0].MaterialButton;
+            var selected_papers = getSelectedPapers();
+            if (selected_papers.length === 0) {
+                edit_paper_button.disable();
+                return;
+            }
+            if (selected_papers.length === 1) {
+                edit_paper_button.enable();
+            } else {
+                edit_paper_button.disable();
+            }
+        }
+
         function initializeTable() {
             var table = $("#paper_table");
             var header_checkbox = table.find('thead .mdl-data-table__select input');
-
 
             header_checkbox.on('change', function (event) {
                 var checkboxes = table.find('tbody .mdl-data-table__select');
@@ -55,6 +79,7 @@
             var checkbox = $("<input>").addClass("mdl-checkbox__input").attr("type", "checkbox").attr("id", checkbox_id).attr("acp-primary-key", paper.paperID);
             var checkbox_container = $("<label>").addClass("mdl-checkbox mdl-js-checkbox mdl-data-table__select").attr("for", checkbox_id)
                 .append(checkbox);
+            checkbox.on('change', updatePaperActionButtons);
             componentHandler.upgradeElements(checkbox_container[0]);
 
             var checkbox_cell = $("<td>").append(checkbox_container);
@@ -100,6 +125,10 @@
             } else if (!is_add_chip && current_chip_count === 0) {
                 $("#dialog_author_chips").append("No author selected.");
             }
+        }
+        function clearDialogSelectedAuthors() {
+            $("#dialog_author_chips").empty();
+            resetDialogAuthorChipsContainerLabel(false);
         }
         function addToDialogSelectedAuthors(author_id) {
             var author = authorsByID[author_id];
@@ -213,20 +242,66 @@
         }
 
 
-
-
-
         function clearDialog() {
             //TODO
+            changeMaterialTextfieldValue("title_input", "");
+            setMaterialSelectfield("publication_category_input", 0);
+            changeMaterialTextfieldValue("publication_input", "");
+
+            changeMaterialTextfieldValue("volume_input", "");
+            changeMaterialTextfieldValue("page_input", "");
+            changeMaterialTextfieldValue("digital_object_id_input", "");
+            changeMaterialTextfieldValue("document_url_input", "");
+
+            setMaterialCheckbox("peer_reviewed_input", false);
+            setMaterialSelectfield("genre_input", 0);
+            setMaterialSelectfield("presentation_style", 0);
+            setMaterialCheckbox("has_enterprise_partnership_input", false);
+            setMaterialCheckbox("has_international_co_author_input", false);
+            setMaterialCheckbox("is_collaborative_project_input", false);
+            changeMaterialTextfieldValue("acknowledgment_input", "");
+            clearDialogSelectedAuthors();
+            changeMaterialTextfieldValue("publish_date_year_input", "");
+            changeMaterialTextfieldValue("publish_date_month_input", "");
+            clearDropzone("document_dropzone");
+            clearDropzone("video_dropzone");
+            clearDropzone("package_dropzone");
+            clearDropzone("publication_confirmation_dropzone");
+            switchTab("general-panel");
         }
 
-        function getDropzoneServerFileName(dropzone_id) {
-            var accepted_files = $("#" + dropzone_id)[0].dropzone.getAcceptedFiles()
-            if (accepted_files.length > 0) {
-                return accepted_files[0].server_file_name;
+        function setDialog(paper) {
+            var paperUTCDate = new Date(0);
+            paperUTCDate.setUTCMilliseconds(paper.publishDate);
+            changeMaterialTextfieldValue("title_input", paper.title);
+            setMaterialSelectfield("publication_category_input", paper.publicationCategory);
+            changeMaterialTextfieldValue("publication_input", paper.publication);
+
+            changeMaterialTextfieldValue("volume_input", paper.volume);
+            changeMaterialTextfieldValue("page_input", paper.paper);
+            changeMaterialTextfieldValue("digital_object_id_input", paper.digitalObjectID);
+            changeMaterialTextfieldValue("document_url_input", paper.documentURL);
+
+            setMaterialCheckbox("peer_reviewed_input", paper.peerReviewed);
+            setMaterialSelectfield("genre_input", paper.genre);
+            setMaterialSelectfield("presentation_style", paper.presentationStyle);
+            setMaterialCheckbox("has_enterprise_partnership_input", paper.hasEnterprisePartnership);
+            setMaterialCheckbox("has_international_co_author_input", paper.hasInternationalCoAuthor);
+            setMaterialCheckbox("is_collaborative_project_input", paper.isCollaborativeProject);
+            changeMaterialTextfieldValue("acknowledgment_input", paper.acknowledgment);
+            clearDialogSelectedAuthors();
+            for (var i = 0, length = paper.authorIDs.length; i < length; i++) {
+                addToDialogSelectedAuthors(paper.authorIDs[i]);
             }
-            return null;
+            changeMaterialTextfieldValue("publish_date_year_input", paperUTCDate.getUTCFullYear());
+            changeMaterialTextfieldValue("publish_date_month_input", paperUTCDate.getUTCMonth() + 1);
+            setDropzoneFile("document_dropzone", paper.documentFilePath);
+            setDropzoneFile("video_dropzone", paper.videoFilePath);
+            setDropzoneFile("package_dropzone", paper.packageFilePath);
+            setDropzoneFile("publication_confirmation_dropzone", paper.publicationConfirmationFilePath);
         }
+
+
         function getPaperFromDialog() {
             var paper = {};
             paper.title = $("#title_input").val();
@@ -253,13 +328,17 @@
 
             return paper;
         }
-        function AddPaper() {
+        function validateDialog() {
             var first_invalid_field = form_validator.validateAndGetFirstError();
             if (first_invalid_field) {
                 var first_invalid_tab_id = $("#" + first_invalid_field.input_id).closest(".mdl-tabs__panel").attr("id");
                 switchTab(first_invalid_tab_id);
-                return;
+                return false;
             }
+            return true;
+        }
+        function AddPaper() {
+            if (!validateDialog()) return;
             var paper = getPaperFromDialog();
             console.log(paper);
             $.ajax({
@@ -274,15 +353,64 @@
                 success: function (result) {
                     var paper = result;
                     console.log(paper);
-                    papers.push(paper);
-                    // TODO: do not update view
+                    if (searched) {
+                        searchPapers();
+                    }
                     clearDialog();
                     paper_dialog.close();
                     $("#paper_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Paper added." });
                 }
             });
         }
-
+        function UpdatePaper() {
+            if (!validateDialog()) return;
+            var paper = getPaperFromDialog();
+            paper.paperID = getSelectedPapers()[0].paperID;
+            console.log(paper);
+            $.ajax({
+                type: "PUT",
+                url: "api/papers/" + paper.paperID,
+                data: JSON.stringify(paper),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                },
+                success: function (result) {
+                    var paper = result;
+                    console.log(paper);
+                    if (searched) {
+                        searchPapers();
+                    }
+                    clearDialog();
+                    paper_dialog.close();
+                    $("#paper_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Paper updated." });
+                }
+            });
+        }
+        function searchPapers() {
+            if (!main_validator.validate()) {
+                return;
+            }
+            var criteria = getSearchCriteria();
+            console.log(criteria);
+            $.ajax({
+                type: "GET",
+                url: "api/papers?" + $.param(criteria),
+                data: null,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                },
+                success: function (paper_result) {
+                    papers = paper_result;
+                    arrayToHash(papers, "paperID", papersByID);
+                    setPaperTable(papers);
+                    searched = true;
+                }
+            });
+        }
         function getSearchCriteria() {
             var criteria = {};
             // will be ignored duing query string conversion when authorIDs is empty
@@ -321,9 +449,11 @@
 
 
         var papers = [];
+        var papersByID = {};
         var authors = [];
         var authorsByID = {};
         var selected_papers = null;
+        var searched = false;
         var form_validator = new FormValidator();
         var main_validator = new FormValidator();
 
@@ -338,6 +468,15 @@
                 dialog.find(".mdl-dialog__title").text("Add Paper");
                 $("#paper_dialog_confirm").text("Add");
                 dialog.attr("acp-action", "add");
+                paper_dialog.showModal();
+            });
+
+            $("#edit_paper_button").on("click", function () {
+                var dialog = $("#paper_dialog");
+                dialog.find(".mdl-dialog__title").text("Edit Paper");
+                $("#paper_dialog_confirm").text("Update");
+                dialog.attr("acp-action", "edit");
+                setDialog(getSelectedPapers()[0]);
                 paper_dialog.showModal();
             });
             $("#paper_dialog_cancel").click(function () {
@@ -478,20 +617,25 @@
                 },
                 success: function (author_result) {
                     authors = author_result;
-                    for (var i = 0; i < authors.length; i++) {
-                        authorsByID[authors[i].authorID] = authors[i];
-                    }
+                    arrayToHash(authors, "authorID", authorsByID);
                 }
             });
 
 
             $("#main_publish_date_toggle").on('change', function (event) {
                 if ($(this).is(":checked")) {
-                    $("#main_publish_date_from_input").parent()[0].MaterialTextfield.enable()
-                    $("#main_publish_date_to_input").parent()[0].MaterialTextfield.enable()
+                    var current_year = (new Date()).getUTCFullYear();
+                    if ($("#main_publish_date_from_input").val().length === 0) {
+                        changeMaterialTextfieldValue("main_publish_date_from_input", current_year);
+                    }
+                    if ($("#main_publish_date_to_input").val().length === 0) {
+                        changeMaterialTextfieldValue("main_publish_date_to_input", current_year);
+                    }
+                    enableMaterialTextfield("main_publish_date_from_input");
+                    enableMaterialTextfield("main_publish_date_to_input");
                 } else {
-                    $("#main_publish_date_from_input").parent()[0].MaterialTextfield.disable()
-                    $("#main_publish_date_to_input").parent()[0].MaterialTextfield.disable()
+                    disableMaterialTextfield("main_publish_date_from_input");
+                    disableMaterialTextfield("main_publish_date_to_input");
                 }
             });
 
@@ -566,31 +710,8 @@
                 }
             });
 
-            var current_year = (new Date()).getUTCFullYear();
-            $("#main_publish_date_from_input").val(current_year);
-            $("#main_publish_date_to_input").val(current_year);
+            $("#search_paper_button").on("click", searchPapers);
 
-            $("#search_paper_button").on("click", function () {
-                if (!main_validator.validate()) {
-                    return;
-                }
-                var criteria = getSearchCriteria();
-                console.log(criteria);
-                $.ajax({
-                    type: "GET",
-                    url: "api/papers?" + $.param(criteria),
-                    data: null,
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
-                    },
-                    success: function (paper_result) {
-                        papers = paper_result;
-                        setPaperTable(papers);
-                    }
-                });
-            });
             var dropzoneDisplayServerError = function (file, response) {
                 $(file.previewElement).find('.dz-error-message').text(response.Message);
             };

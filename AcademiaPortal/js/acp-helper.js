@@ -140,3 +140,87 @@ function switchTab(tab_id) {
     $(".mdl-tabs__panel").removeClass("is-active");
     $("#" + tab_id).addClass("is-active");
 }
+
+function arrayToHash(list, key_name, hash) {
+    for (var i = 0; i < list.length; i++) {
+        var element = list[i];
+        hash[element[key_name]] = element;
+    }
+    return hash;
+}
+
+//WARNING: MaterialTextfield may not be upgraded inside $(document.ready())
+function changeMaterialTextfieldValue(field_id, value) {
+    console.log($("#" + field_id).parent()[0]);
+    $("#" + field_id).parent()[0].MaterialTextfield.change(value);
+}
+
+function enableMaterialTextfield(field_id) {
+    $("#" + field_id).parent()[0].MaterialTextfield.enable()
+}
+function disableMaterialTextfield(field_id) {
+    $("#" + field_id).parent()[0].MaterialTextfield.disable()
+}
+
+function enableMaterialCheckbox(checkbox_id) {
+    $("#" + checkbox_id).parent()[0].MaterialCheckbox.enable()
+}
+function disableMaterialCheckbox(checkbox_id) {
+    $("#" + checkbox_id).parent()[0].MaterialCheckbox.disable()
+}
+
+function setMaterialCheckbox(checkbox_id, to_be_checked) {
+    var checkbox = $("#" + checkbox_id).parent()[0].MaterialCheckbox;
+    if (to_be_checked) {
+        checkbox.check();
+    } else {
+        checkbox.uncheck();
+    }
+}
+function setMaterialSelectfield(select_id, value) {
+    var select = $("#" + select_id);
+    select.val(value);
+    select.parent()[0].MaterialSelectfield.refreshOptions();
+}
+
+function clearDropzone(dropzone_id) {
+    var dropzone = $("#" + dropzone_id)[0].dropzone;
+    dropzone.removeAllFiles();
+}
+function setDropzoneFile(dropzone_id, filename) {
+    clearDropzone(dropzone_id);
+    if (!filename) return;
+    var dropzone_container = $("#" + dropzone_id);
+    var dropzone = $("#" + dropzone_id)[0].dropzone;
+    // Create the mock file:
+    var mockFile = {
+        name: filename,
+        server_file_name: filename,
+        size: 0, accepted: true
+    };
+
+    //hacky: the following action is not stated in Wiki
+    dropzone.files.push(mockFile);
+    // Call the default addedfile event handler
+    dropzone.emit("addedfile", mockFile);
+
+    //// And optionally show the thumbnail of the file:
+    //dropzone.emit("thumbnail", mockFile, "/image/url");
+    //// Or if the file on your server is not yet in the right
+    //// size, you can let Dropzone download and resize it
+    //// callback and crossOrigin are optional.
+    //dropzone.createThumbnailFromUrl(file, imageUrl, callback, crossOrigin);
+
+    // Make sure that there is no progress bar, etc...
+    dropzone.emit("complete", mockFile);
+
+    dropzone_container.find(".dz-size").first().css("visibility", "hidden");
+}
+
+function getDropzoneServerFileName(dropzone_id) {
+    var accepted_files = $("#" + dropzone_id)[0].dropzone.getAcceptedFiles()
+    if (accepted_files.length > 0) {
+        return accepted_files[0].server_file_name;
+    }
+    return null;
+}
