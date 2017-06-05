@@ -204,8 +204,8 @@
     </div>
     <div class="acp-card-wide mdl-card mdl-shadow--2dp">
         <div class="mdl-card__title acp-card__actions">
-            <button type="button" id="add_author_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">Add</button>
-            <button type="button" id="edit_author_button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary" disabled>Edit</button>
+            <button type="button" id="add_author_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Add</button>
+            <button type="button" id="edit_author_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" disabled>Edit</button>
         </div>
         <div class="acp-card__supporting-text mdl-card__supporting-text">
             <table id="author_2_table" class="mdl-data-table mdl-shadow--2dp">
@@ -273,8 +273,8 @@
             <p>* Required</p>
         </div>
         <div class="mdl-dialog__actions">
-            <button id="author_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"></button>
-            <button id="author_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
+            <button id="author_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary"></button>
+            <button id="author_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised">Cancel</button>
         </div>
     </dialog>
 </asp:Content>
