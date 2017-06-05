@@ -3,9 +3,11 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script defer src="bower_components/mdl-select-component/mdl-selectfield.min.js"></script>
     <link rel="stylesheet" href="bower_components/mdl-select-component/mdl-selectfield.min.css">
-
+    
     <script defer src="bower_components/dropzone/dist/min/dropzone.min.js"></script>
     <link rel="stylesheet" href="bower_components/dropzone/dist/min/dropzone.min.css">
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
     <script type="text/javascript">
         function AuthorshipValidator(input_id, min_author_count) {
@@ -130,6 +132,13 @@
             } else if (!is_add_chip && current_chip_count === 0) {
                 $("#dialog_author_chips").append("No author selected.");
             }
+            $("#dialog_author_chips").sortable({
+                placeholder: "mdl-chip",
+                forcePlaceholderSize: true,
+                helper: "clone",
+                items: ".acp-author-chip"
+            });
+            $("#dialog_author_chips .acp-author-chip").disableSelection();
         }
         function clearDialogSelectedAuthors() {
             $("#dialog_author_chips").empty();
