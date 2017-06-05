@@ -107,9 +107,16 @@ function getAuthorName_En(author) {
 function getAuthorName_Ja(author) {
     return [author.familyName_Ja, author.firstName_Ja].filter(function (s) { return s; }).join(" ");
 }
+
+function isForeignKatakanaName(name) {
+    var filtered_name = name.replace(/[ａ-ｚa-z 　\.]/gi, "");
+    var matched_katakana = filtered_name.match(/[\u30a0-\u30ff]/g);
+    var katakana_occurence = matched_katakana ? matched_katakana.length : 0;
+    return katakana_occurence === filtered_name.length;
+}
 function getAuthorName(author) {
     var name_ja = getAuthorName_Ja(author);
-    if (name_ja.length > 0) {
+    if (name_ja.length > 0 && !isForeignKatakanaName(name_ja)) {
         return name_ja;
     }
     return getAuthorName_En(author);
@@ -123,16 +130,74 @@ function getAuthorsText(paper) {
     var authorNames = [];
     for (var i = 0; i < paper.authorIDs.length; i++) {
         var author = authorsByID[paper.authorIDs[i]];
-        authorNames.push(getAuthorName_En(author));
+        authorNames.push(getAuthorName(author));
     }
     return authorNames.join(", ");
 }
 
-function getPublishDateText(paper) {
+function getAuthorsText_En(paper) {
+    var authorNames = [];
+    for (var i = 0; i < paper.authorIDs.length; i++) {
+        var author = authorsByID[paper.authorIDs[i]];
+        authorNames.push(getAuthorName_En(author));
+    }
+    if (authorNames.length < 2) {
+        return authorNames[0];
+    }
+    return authorNames.slice(0, -1).join(", ") + " and " + authorNames.slice(-1);
+}
+
+function getAuthorsText_Ja(paper) {
+    var authorNames = [];
+    for (var i = 0; i < paper.authorIDs.length; i++) {
+        var author = authorsByID[paper.authorIDs[i]];
+        authorNames.push(getAuthorName_Ja(author));
+    }
+    return authorNames.join(", ");
+}
+
+function getPublishDateText_Ja(paper) {
     var d = new Date(paper.publishDate);
     return d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月";
 }
 
+var month_names_en = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+function getPublishDateText_En(paper) {
+    var d = new Date(paper.publishDate);
+    return month_names_en[d.getUTCMonth()] + " " + d.getUTCFullYear();
+}
+
+function getPublicationText(paper) {
+    var tokens = [];
+    tokens.push(paper.publication);
+    if (paper.volume) {
+        tokens.push(paper.volume);
+    }
+    if (paper.page) {
+        tokens.push(paper.page);
+    }
+    return tokens.join(", ");
+}
+
+function getPaperSummary(paper) {
+    var tokens = [];
+    var authors_text;
+    var publish_date_text;
+    if (paper.publicationCategory === 1 || paper.publicationCategory === 4) {
+        authors_text = getAuthorsText_En(paper);
+        publish_date_text = getPublishDateText_En(paper);
+    } else {
+        authors_text = getAuthorsText_Ja(paper);
+        publish_date_text = getPublishDateText_Ja(paper);
+    }
+    tokens.push(authors_text);
+    tokens.push(paper.title);
+    tokens.push(getPublicationText(paper));
+    tokens.push(publish_date_text);
+    return tokens.join(", ") + ".";
+}
 
 function switchTab(tab_id) {
     $("a.mdl-tabs__tab").removeClass("is-active");

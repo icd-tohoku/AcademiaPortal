@@ -41,11 +41,15 @@
 
         function updatePaperActionButtons() {
             var edit_paper_button = $("#edit_paper_button")[0].MaterialButton;
+            var summarize_paper_button = $("#summarize_paper_button")[0].MaterialButton;
+
             var selected_papers = getSelectedPapers();
             if (selected_papers.length === 0) {
                 edit_paper_button.disable();
+                summarize_paper_button.disable();
                 return;
             }
+            summarize_paper_button.enable();
             if (selected_papers.length === 1) {
                 edit_paper_button.enable();
             } else {
@@ -70,6 +74,7 @@
                         checkboxes[i].MaterialCheckbox.uncheck();
                     }
                 }
+                updatePaperActionButtons();
             })
         }
 
@@ -86,8 +91,8 @@
             row.append(checkbox_cell);
             row.append($("<td>").text(paper.title).addClass("mdl-data-table__cell--non-numeric acp-data-table__cell--multiline").attr("acp-col-name", "title"));
             row.append($("<td>").text(getAuthorsText(paper)).addClass("mdl-data-table__cell--non-numeric acp-data-table__cell--multiline").attr("acp-col-name", "authors"));
-            row.append($("<td>").text(paper.publication).addClass("mdl-data-table__cell--non-numeric acp-data-table__cell--multiline").attr("acp-col-name", "publication"));
-            row.append($("<td>").text(getPublishDateText(paper)).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "publish_date"));
+            row.append($("<td>").text(getPublicationText(paper)).addClass("mdl-data-table__cell--non-numeric acp-data-table__cell--multiline").attr("acp-col-name", "publication"));
+            row.append($("<td>").text(getPublishDateText_Ja(paper)).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "publish_date"));
             table_body.append(row);
         }
 
@@ -271,8 +276,7 @@
         }
 
         function setDialog(paper) {
-            var paperUTCDate = new Date(0);
-            paperUTCDate.setUTCMilliseconds(paper.publishDate);
+            var paperUTCDate = new Date(paper.publishDate);
             changeMaterialTextfieldValue("title_input", paper.title);
             setMaterialSelectfield("publication_category_input", paper.publicationCategory);
             changeMaterialTextfieldValue("publication_input", paper.publication);
@@ -463,6 +467,10 @@
             if (!paper_dialog.showModal) {
                 dialogPolyfill.registerDialog(paper_dialog);
             }
+            var paper_summary_dialog = $("#paper_summary_dialog")[0];
+            if (!paper_summary_dialog.showModal) {
+                dialogPolyfill.registerDialog(paper_summary_dialog);
+            }
             $("#add_paper_button").click(function () {
                 var dialog = $("#paper_dialog");
                 dialog.find(".mdl-dialog__title").text("Add Paper");
@@ -479,12 +487,24 @@
                 setDialog(getSelectedPapers()[0]);
                 paper_dialog.showModal();
             });
+            $("#summarize_paper_button").on("click", function () {
+                var selected_papers = getSelectedPapers();
+                var paper_summaries = [];
+                for (var i = 0; i < selected_papers.length; i++) {
+                    paper_summaries.push(getPaperSummary(selected_papers[i]));
+                }
+                $("#paper_summary_textarea").val(paper_summaries.join("\n\n"));
+                paper_summary_dialog.showModal();
+            });
             $("#paper_dialog_cancel").click(function () {
                 paper_dialog.close();
                 if ($("#paper_dialog").attr("acp-action") === "edit") {
                     clearDialog();
                 }
             });
+            $("#summary_dialog_close").on('click', function () {
+                paper_summary_dialog.close();
+            })
 
             $("#author_dialog_search").on("keyup", function (event) {
                 var search_text = $(this).val();
@@ -966,6 +986,7 @@
         <div class="mdl-card__title acp-card__actions">
             <button type="button" id="add_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Add</button>
             <button type="button" id="edit_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" disabled>Edit</button>
+            <button type="button" id="summarize_paper_button" class="mdl-button mdl-js-button mdl-button--raised" disabled>Summarize</button>
         </div>
         <div class="acp-card-subcomponent--full-width mdl-card__supporting-text">
             <table id="paper_table" class="acp-table--no-scroll mdl-data-table mdl-shadow--2dp">
@@ -1189,6 +1210,18 @@
         <div class="mdl-dialog__actions">
             <button id="paper_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary"></button>
             <button id="paper_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised">Cancel</button>
+        </div>
+    </dialog>
+    <dialog id="paper_summary_dialog" class="acp-wide-form mdl-dialog">
+        <h3 class="mdl-dialog__title">Summary of Papers</h3>
+        <div class="mdl-dialog__content">
+            <div class="acp-textfield--full-width mdl-textfield mdl-js-textfield">
+                <textarea class="mdl-textfield__input" rows="10" id="paper_summary_textarea" readonly></textarea>
+                <label class="mdl-textfield__label" for="paper_summary_textarea"></label>
+            </div>
+        </div>
+        <div class="mdl-dialog__actions">
+            <button id="summary_dialog_close" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Close</button>
         </div>
     </dialog>
 </asp:Content>
