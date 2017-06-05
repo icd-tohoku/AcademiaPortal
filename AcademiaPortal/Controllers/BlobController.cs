@@ -23,9 +23,11 @@ namespace AcademiaPortal.Controllers
     public class BlobController : ApiController
     {
         // GET api/<controller>
-        public IEnumerable<string> Get()
+        public Dictionary<string, string> Get()
         {
-            return new string[] { "value1", "value2" };
+            Dictionary<string, string> basePaths = new Dictionary<string, string>();
+            basePaths.Add("base", "uploads/");
+            return basePaths;
         }
 
         // GET api/<controller>/5
