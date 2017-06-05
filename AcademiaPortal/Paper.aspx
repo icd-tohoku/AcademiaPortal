@@ -722,6 +722,7 @@
 
             var document_dropzone = new Dropzone("#document_dropzone", {
                 url: "/api/blob",
+                maxFilesize: 500,
                 maxFiles: 1,
                 addRemoveLinks: true,
                 init: function () {
@@ -733,6 +734,7 @@
 
             var video_dropzone = new Dropzone("#video_dropzone", {
                 url: "/api/blob",
+                maxFilesize: 500,
                 maxFiles: 1,
                 addRemoveLinks: true,
                 init: function () {
@@ -744,6 +746,7 @@
 
             var package_dropzone = new Dropzone("#package_dropzone", {
                 url: "/api/blob",
+                maxFilesize: 500,
                 maxFiles: 1,
                 addRemoveLinks: true,
                 init: function () {
@@ -755,6 +758,7 @@
 
             var publication_confirmation_dropzone = new Dropzone("#publication_confirmation_dropzone", {
                 url: "/api/blob",
+                maxFilesize: 500,
                 maxFiles: 1,
                 addRemoveLinks: true,
                 init: function () {
