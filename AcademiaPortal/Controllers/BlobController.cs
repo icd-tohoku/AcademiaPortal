@@ -63,7 +63,7 @@ namespace AcademiaPortal.Controllers
                 return Task.FromResult(Request.CreateErrorResponse(HttpStatusCode.RequestEntityTooLarge, "File should be smaller than " + Math.Round(section.MaxRequestLength / 1024.0) + "MB."));
             }
 
-            string root = HttpContext.Current.Server.MapPath("~/App_Data");
+            string root = HttpContext.Current.Server.MapPath("~/uploads");
             var provider = new CustomMultipartFormDataStreamProvider(root);
 
             // Read the form data and return an async task.

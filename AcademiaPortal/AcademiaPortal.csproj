@@ -182,9 +182,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-
-
-
   <Target Name="AddBowerOutput">
     <ItemGroup>
       <_CustomFiles Include="bower_components\**\*" />
