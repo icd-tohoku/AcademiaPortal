@@ -15,8 +15,8 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <!-- dialog-polyfill -->
-    <script type="text/javascript" src="/bower_components/dialog-polyfill/dialog-polyfill.js"></script>
-    <link rel="stylesheet" href="/bower_components/dialog-polyfill/dialog-polyfill.css" type="text/css" />
+    <script type="text/javascript" src="bower_components/dialog-polyfill/dialog-polyfill.js"></script>
+    <link rel="stylesheet" href="bower_components/dialog-polyfill/dialog-polyfill.css" type="text/css" />
 
     <!-- custom style -->
     <link rel="stylesheet" href="css/acp.css" type="text/css" />

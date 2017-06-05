@@ -78,7 +78,7 @@
             console.log(author);
             $.ajax({
                 type: "POST",
-                url: "/api/authors",
+                url: "api/authors",
                 data: JSON.stringify(author),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -107,7 +107,7 @@
             console.log(selected_author);
             $.ajax({
                 type: "PUT",
-                url: "/api/authors/" + selected_author.authorID,
+                url: "api/authors/" + selected_author.authorID,
                 data: JSON.stringify(selected_author),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -170,7 +170,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "/api/authors",
+                url: "api/authors",
                 data: null,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

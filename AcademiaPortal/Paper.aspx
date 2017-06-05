@@ -264,7 +264,7 @@
             console.log(paper);
             $.ajax({
                 type: "POST",
-                url: "/api/papers",
+                url: "api/papers",
                 data: JSON.stringify(paper),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -469,7 +469,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "/api/authors",
+                url: "api/authors",
                 data: null,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -578,7 +578,7 @@
                 console.log(criteria);
                 $.ajax({
                     type: "GET",
-                    url: "/api/papers?" + $.param(criteria),
+                    url: "api/papers?" + $.param(criteria),
                     data: null,
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',

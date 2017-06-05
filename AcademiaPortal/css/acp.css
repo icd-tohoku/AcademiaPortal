@@ -122,7 +122,7 @@ span.acp-span--vertically-centered {
     align-items: center;
 }
 
-dialog .acp-fit-form.mdl-dialog {
+dialog.acp-fit-form.mdl-dialog {
     width: 480px;
     /* conflicts with dialog-polyfill: fails to hide */
     /*
@@ -149,7 +149,7 @@ dialog.acp-wide-form.mdl-dialog {
 }
 
 /* reference for table: http://stackoverflow.com/a/36004018 */
-table .acp-table {
+table.acp-table {
     display: table;
 }
 
