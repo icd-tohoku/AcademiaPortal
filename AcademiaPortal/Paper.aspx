@@ -128,11 +128,14 @@
         }
 
         function setPaperTable(papers) {
-            var table_body = $("#paper_table").find("tbody");
+            var table = $("#paper_table");
+            var table_body = table.find("tbody");
             table_body.empty();
             for (var i = 0; i < papers.length; i++) {
                 addToPaperTable(table_body, papers[i]);
             }
+            var header_checkbox = table.find('thead .mdl-data-table__select input');
+            header_checkbox.parent()[0].MaterialCheckbox.uncheck();
         }
         function searchAuthors(search_text) {
             var matched_authors = [];
