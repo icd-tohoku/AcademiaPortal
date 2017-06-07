@@ -44,41 +44,13 @@
         function updatePaperActionButtons() {
             var edit_paper_button = $("#edit_paper_button")[0].MaterialButton;
             var summarize_paper_button = $("#summarize_paper_button")[0].MaterialButton;
-            var document_download_button = $("#document_download_button")[0].MaterialButton;
-            var video_download_button = $("#video_download_button")[0].MaterialButton;
-            var package_download_button = $("#package_download_button")[0].MaterialButton;
-            var publication_confirmation_download_button = $("#publication_confirmation_download_button")[0].MaterialButton;
 
             var selected_papers = getSelectedPapers();
             if (selected_papers.length === 0 || selected_papers.length > 1) {
                 edit_paper_button.disable();
-                document_download_button.disable();
-                video_download_button.disable();
-                package_download_button.disable();
-                publication_confirmation_download_button.disable();
             } else {
                 var paper = selected_papers[0];
                 edit_paper_button.enable();
-                if (paper.documentFilePath) {
-                    document_download_button.enable();
-                } else {
-                    document_download_button.disable();
-                }
-                if (paper.videoFilePath) {
-                    video_download_button.enable();
-                } else {
-                    video_download_button.disable();
-                }
-                if (paper.packageFilePath) {
-                    package_download_button.enable();
-                } else {
-                    package_download_button.disable();
-                }
-                if (paper.publicationConfirmationFilePath) {
-                    publication_confirmation_download_button.enable();
-                } else {
-                    publication_confirmation_download_button.disable();
-                }
             }
 
             if (selected_papers.length > 0) {
@@ -109,6 +81,20 @@
             })
         }
 
+        function createDownloadAnchor(icon_name, file_path, description) {
+            var icon = $("<i>").addClass("material-icons").text(icon_name);
+            var anchor = $("<a>").addClass("mdl-button").addClass("acp-download-anchor");
+            anchor.attr("title", description);
+            if (file_path) {
+                icon.addClass("mdl-button--primary");
+                anchor.attr("href", blob_base_path + file_path);
+                anchor.attr("download", removeGuidFromFilePath(file_path))
+            } else {
+                anchor.attr("disabled", true);
+            }
+            return anchor.append(icon);
+        }
+
         function addToPaperTable(table_body, paper) {
             var row = $("<tr>");
             var checkbox_id = "row[" + paper.paperID + "]";
@@ -124,6 +110,18 @@
             row.append($("<td>").text(getAuthorsText(paper)).addClass("mdl-data-table__cell--non-numeric acp-data-table__cell--multiline").attr("acp-col-name", "authors"));
             row.append($("<td>").text(getPublicationText(paper)).addClass("mdl-data-table__cell--non-numeric acp-data-table__cell--multiline").attr("acp-col-name", "publication"));
             row.append($("<td>").text(getPublishDateText_Ja(paper)).addClass("mdl-data-table__cell--non-numeric").attr("acp-col-name", "publish_date"));
+
+            var icon = $("<i>").addClass("material-icons").text("description");
+            var document_file_download_anchor = $("<a>").addClass("mdl-button").attr("disabled", true);
+
+            var download_cell = $("<td>");
+
+            download_cell.append(createDownloadAnchor("description", paper.documentFilePath, "Document"));
+            download_cell.append(createDownloadAnchor("movie", paper.videoFilePath, "Video"));
+            download_cell.append(createDownloadAnchor("folder_open", paper.packageFilePath, "Package"));
+            download_cell.append(createDownloadAnchor("assignment_turned_in", paper.publicationConfirmationFilePath, "研究成果発表確認シート"));
+
+            row.append(download_cell.addClass("mdl-data-table__cell--non-numeric"));
             table_body.append(row);
         }
 
@@ -534,23 +532,6 @@
                 }
                 $("#paper_summary_textarea").val(paper_summaries.join("\n\n"));
                 paper_summary_dialog.showModal();
-            });
-
-            $("#document_download_button").on("click", function () {
-                var paper = getSelectedPapers()[0];
-                window.open(blob_base_path + paper.documentFilePath);
-            });
-            $("#video_download_button").on("click", function () {
-                var paper = getSelectedPapers()[0];
-                window.open(blob_base_path + paper.videoFilePath);
-            });
-            $("#package_download_button").on("click", function () {
-                var paper = getSelectedPapers()[0];
-                window.open(blob_base_path + paper.packageFilePath);
-            });
-            $("#publication_confirmation_download_button").on("click", function () {
-                var paper = getSelectedPapers()[0];
-                window.open(blob_base_path + paper.publicationConfirmationFilePath);
             });
 
             $("#paper_dialog_cancel").click(function () {
@@ -1054,11 +1035,6 @@
             <button type="button" id="add_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Add</button>
             <button type="button" id="edit_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" disabled>Edit</button>
             <button type="button" id="summarize_paper_button" class="mdl-button mdl-js-button mdl-button--raised" disabled>Summarize</button>
-            <button type="button" id="document_download_button" class="mdl-button mdl-js-button mdl-button--raised" disabled><i class="material-icons">file_download</i>Document</button>
-            <button type="button" id="video_download_button" class="mdl-button mdl-js-button mdl-button--raised" disabled><i class="material-icons">file_download</i>Video</button>
-            <button type="button" id="package_download_button" class="mdl-button mdl-js-button mdl-button--raised" disabled><i class="material-icons">file_download</i>Package</button>
-            <button type="button" id="publication_confirmation_download_button" class="mdl-button mdl-js-button mdl-button--raised" disabled><i class="material-icons">file_download</i>研究成果発表確認シート</button>
-
         </div>
         <div class="acp-card-subcomponent--full-width mdl-card__supporting-text">
             <table id="paper_table" class="acp-table--no-scroll mdl-data-table mdl-shadow--2dp">
@@ -1073,6 +1049,7 @@
                         <th class="mdl-data-table__cell--non-numeric">Authors</th>
                         <th class="mdl-data-table__cell--non-numeric">Published In</th>
                         <th class="mdl-data-table__cell--non-numeric">Date</th>
+                        <th class="mdl-data-table__cell--non-numeric">Downloads</th>
                     </tr>
                 </thead>
                 <tbody>

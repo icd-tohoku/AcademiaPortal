@@ -289,3 +289,11 @@ function getDropzoneServerFileName(dropzone_id) {
     }
     return null;
 }
+
+function removeGuidFromFilePath(file_path) {
+    safe_file_path = file_path.replace(/\//g, "-");
+    if (safe_file_path.match(/[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\-/i)) {
+        return safe_file_path.slice(37);
+    }
+    return safe_file_path;
+}
