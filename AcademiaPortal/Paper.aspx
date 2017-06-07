@@ -320,7 +320,7 @@
             changeMaterialTextfieldValue("publication_input", paper.publication);
 
             changeMaterialTextfieldValue("volume_input", paper.volume);
-            changeMaterialTextfieldValue("page_input", paper.paper);
+            changeMaterialTextfieldValue("page_input", paper.page);
             changeMaterialTextfieldValue("digital_object_id_input", paper.digitalObjectID);
             changeMaterialTextfieldValue("document_url_input", paper.documentURL);
 
