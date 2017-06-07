@@ -43,14 +43,16 @@
 
         function updatePaperActionButtons() {
             var edit_paper_button = $("#edit_paper_button")[0].MaterialButton;
+            var delete_paper_button = $("#delete_paper_button")[0].MaterialButton;
             var summarize_paper_button = $("#summarize_paper_button")[0].MaterialButton;
-
             var selected_papers = getSelectedPapers();
             if (selected_papers.length === 0 || selected_papers.length > 1) {
                 edit_paper_button.disable();
+                delete_paper_button.disable();
             } else {
                 var paper = selected_papers[0];
                 edit_paper_button.enable();
+                delete_paper_button.enable();
             }
 
             if (selected_papers.length > 0) {
@@ -428,6 +430,27 @@
                 }
             });
         }
+        function DeletePaper() {
+            var paper_id = getSelectedPapers()[0].paperID;
+            $.ajax({
+                type: "DELETE",
+                url: "api/papers/" + paper_id,
+                data: null,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Request: " + XMLHttpRequest.toString() + "\n\nStatus: " + textStatus + "\n\nError: " + errorThrown);
+                },
+                success: function (result) {
+                    if (searched) {
+                        searchPapers();
+                    }
+                    var dialog = $("#paper_delete_dialog");
+                    dialog[0].close();
+                    $("#paper_snackbar")[0].MaterialSnackbar.showSnackbar({ message: "Paper deleted." });
+                }
+            });
+        }
         function searchPapers() {
             if (!main_validator.validate()) {
                 return;
@@ -448,6 +471,7 @@
                     arrayToHash(papers, "paperID", papersByID);
                     setPaperTable(papers);
                     searched = true;
+                    updatePaperActionButtons();
                 }
             });
         }
@@ -524,6 +548,18 @@
                 setDialog(getSelectedPapers()[0]);
                 paper_dialog.showModal();
             });
+            $("#delete_paper_button").on('click', function () {
+                var dialog = $("#paper_delete_dialog");
+                var dialog_content = dialog.find(".mdl-dialog__content");
+                var dialog_content_text = $("<p>");
+                var selected_paper = getSelectedPapers()[0];
+                dialog_content_text.append("Are you sure to delete ")
+                dialog_content_text.append($("<strong>").append(selected_paper.title));
+                dialog_content_text.append("?");
+                dialog_content.empty();
+                dialog_content.append(dialog_content_text);
+                dialog[0].showModal();
+            });
             $("#summarize_paper_button").on("click", function () {
                 var selected_papers = getSelectedPapers();
                 var paper_summaries = [];
@@ -539,6 +575,10 @@
                 if ($("#paper_dialog").attr("acp-action") === "edit") {
                     clearDialog();
                 }
+            });
+            $("#paper_delete_dialog_cancel").on("click", function () {
+                var dialog = $("#paper_delete_dialog");
+                dialog[0].close();
             });
             $("#summary_dialog_close").on('click', function () {
                 paper_summary_dialog.close();
@@ -653,7 +693,9 @@
                     UpdatePaper();
                 }
             });
-
+            $("#paper_delete_dialog_confirm").on("click", function () {
+                DeletePaper();
+            });
             form_validator.add(new FieldLengthValidator("title_input"));
             form_validator.add(new FieldLengthValidator("publication_input"));
             form_validator.add(new FieldIntegerRangeValidator("publish_date_year_input", 0));
@@ -1034,6 +1076,7 @@
         <div class="mdl-card__title acp-card__actions">
             <button type="button" id="add_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Add</button>
             <button type="button" id="edit_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" disabled>Edit</button>
+            <button type="button" id="delete_paper_button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" disabled>Delete</button>
             <button type="button" id="summarize_paper_button" class="mdl-button mdl-js-button mdl-button--raised" disabled>Summarize</button>
         </div>
         <div class="acp-card-subcomponent--full-width mdl-card__supporting-text">
@@ -1271,6 +1314,15 @@
         </div>
         <div class="mdl-dialog__actions">
             <button id="summary_dialog_close" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Close</button>
+        </div>
+    </dialog>
+    <dialog id="paper_delete_dialog" class="acp-wide-form mdl-dialog">
+        <h3 class="mdl-dialog__title">Delete Paper</h3>
+        <div class="mdl-dialog__content">
+        </div>
+        <div class="mdl-dialog__actions">
+            <button id="paper_delete_dialog_confirm" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">Delete</button>
+            <button id="paper_delete_dialog_cancel" type="button" class="mdl-button mdl-js-button mdl-button--raised">Cancel</button>
         </div>
     </dialog>
 </asp:Content>
