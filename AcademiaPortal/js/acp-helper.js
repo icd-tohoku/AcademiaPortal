@@ -234,6 +234,13 @@ function disableMaterialCheckbox(checkbox_id) {
     $("#" + checkbox_id).parent()[0].MaterialCheckbox.disable()
 }
 
+function enableMaterialSelectfield(select_id) {
+    $("#" + select_id).parent()[0].MaterialSelectfield.enable()
+}
+function disableMaterialSelectfield(select_id) {
+    $("#" + select_id).parent()[0].MaterialSelectfield.disable()
+}
+
 function setMaterialCheckbox(checkbox_id, to_be_checked) {
     var checkbox = $("#" + checkbox_id).parent()[0].MaterialCheckbox;
     if (to_be_checked) {
@@ -241,6 +248,11 @@ function setMaterialCheckbox(checkbox_id, to_be_checked) {
     } else {
         checkbox.uncheck();
     }
+}
+
+function setMaterialSelectfieldBeforeUpgrade(select_id, value) {
+    var select = $("#" + select_id);
+    select.val(value);
 }
 function setMaterialSelectfield(select_id, value) {
     var select = $("#" + select_id);
