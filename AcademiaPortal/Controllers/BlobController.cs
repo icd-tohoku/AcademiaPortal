@@ -13,10 +13,17 @@ namespace AcademiaPortal.Controllers
 {
     public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
     {
+        public const int MAX_FILENAME_LENGTH = 256;
+        public const int GUID_PREFIX_LENGTH = 36 + 1;
+        public const int MAX_CLIENT_FILENAME_LENGTH = MAX_FILENAME_LENGTH - GUID_PREFIX_LENGTH;
+
         public CustomMultipartFormDataStreamProvider(string path) : base(path) { }
         public override string GetLocalFileName(HttpContentHeaders headers)
         {
-            return Guid.NewGuid().ToString() + "-" + headers.ContentDisposition.FileName.Replace("\"", string.Empty);
+            //removes double-quotes from the beginning and the end of the filename
+            string filename = headers.ContentDisposition.FileName.Replace("\"", string.Empty);
+            string safeFilename = filename.Substring(Math.Max(0, filename.Length - MAX_CLIENT_FILENAME_LENGTH));
+            return Guid.NewGuid().ToString() + "-" + safeFilename;
         }
 
     }

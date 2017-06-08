@@ -251,6 +251,11 @@ namespace AcademiaPortal.Controllers
             String.Join(", ", paperColumns.Select(column => column + " = @" + column)) + " " +
             "WHERE " + paperPrimaryKeyColumn + " = @" + paperPrimaryKeyColumn + ";";
 
+        static String deletePaperSQLTemplate = "DELETE FROM PaperAuthorship WHERE " +
+            paperPrimaryKeyColumn + " = @" + paperPrimaryKeyColumn + "; " +
+            "DELETE FROM Papers WHERE " +
+            paperPrimaryKeyColumn + " = @" + paperPrimaryKeyColumn + "; ";
+
         static String[] paperAuthorshipColumns =
         {
             "PaperID",
@@ -404,8 +409,19 @@ namespace AcademiaPortal.Controllers
         }
 
         // DELETE: api/Papers/5
-        public void Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
+            using (System.Data.SqlClient.SqlConnection conn = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AcademiaDB"].ConnectionString))
+            {
+                conn.Open();
+
+                using (System.Data.SqlClient.SqlCommand deletePaperCommand = new System.Data.SqlClient.SqlCommand(deletePaperSQLTemplate, conn))
+                {
+                    deletePaperCommand.Parameters.AddWithValue(paperPrimaryKeyColumn, id);
+                    deletePaperCommand.ExecuteNonQuery();
+                }
+            }
+            return Ok(id);
         }
     }
 }

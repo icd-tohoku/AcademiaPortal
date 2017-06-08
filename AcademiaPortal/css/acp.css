@@ -90,6 +90,11 @@ div.acp-dropzone-container {
     align-items: center;
 }
 
+.acp-download-anchor {
+    min-width: initial;
+    padding: 0 4px;
+}
+
 .dropzone.is-invalid {
     border: 2px solid #d50000;
 }

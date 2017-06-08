@@ -1,4 +1,11 @@
-﻿## [0.1.0] - 2017-06-04
+﻿## [0.1.1] - 2017-06-08
+### Added
+- Paper deletion.
+### Changed
+- All downloads of a paper placed inside a column.
+- More intuitive toggling of searching options.
+
+## [0.1.0] - 2017-06-04
 ### Added
 - Tons of UI improvements.
 - Database fields: "Has Enterprise Partnership", "Has International Co-Author", "Is Collaborative Project".

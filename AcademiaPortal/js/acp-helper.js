@@ -234,6 +234,13 @@ function disableMaterialCheckbox(checkbox_id) {
     $("#" + checkbox_id).parent()[0].MaterialCheckbox.disable()
 }
 
+function enableMaterialSelectfield(select_id) {
+    $("#" + select_id).parent()[0].MaterialSelectfield.enable()
+}
+function disableMaterialSelectfield(select_id) {
+    $("#" + select_id).parent()[0].MaterialSelectfield.disable()
+}
+
 function setMaterialCheckbox(checkbox_id, to_be_checked) {
     var checkbox = $("#" + checkbox_id).parent()[0].MaterialCheckbox;
     if (to_be_checked) {
@@ -241,6 +248,11 @@ function setMaterialCheckbox(checkbox_id, to_be_checked) {
     } else {
         checkbox.uncheck();
     }
+}
+
+function setMaterialSelectfieldBeforeUpgrade(select_id, value) {
+    var select = $("#" + select_id);
+    select.val(value);
 }
 function setMaterialSelectfield(select_id, value) {
     var select = $("#" + select_id);
@@ -288,4 +300,12 @@ function getDropzoneServerFileName(dropzone_id) {
         return accepted_files[0].server_file_name;
     }
     return null;
+}
+
+function removeGuidFromFilePath(file_path) {
+    safe_file_path = file_path.replace(/\//g, "-");
+    if (safe_file_path.match(/[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\-/i)) {
+        return safe_file_path.slice(37);
+    }
+    return safe_file_path;
 }
