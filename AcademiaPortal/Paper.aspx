@@ -86,13 +86,13 @@
             var current_year = (new Date()).getUTCFullYear();
             var from_input = $("#main_publish_date_from_input");
             var to_input = $("#main_publish_date_to_input");
-            
+
             for (var i = -10; i < 2; i++) {
                 var year = current_year + i;
                 from_input.append($("<option>").attr("value", year).text(year));
                 to_input.append($("<option>").attr("value", year).text(year));
                 if (i === -1) {
-                    from_input.append($("<option>").attr("value",-1).text("(Any Year)"));
+                    from_input.append($("<option>").attr("value", -1).text("(Any Year)"));
                 }
             }
             setMaterialSelectfieldBeforeUpgrade("main_publish_date_from_input", current_year);
@@ -143,6 +143,19 @@
             table_body.append(row);
         }
 
+        function sortPaperTable() {
+            var table_body = $("#paper_table tbody");
+            var table_rows = table_body.children("tr");
+            var publish_date_order = $("#publish_date_th").hasClass("mdl-data-table__header--sorted-ascending") ? 1 : -1;
+            table_rows.detach().sort(function (row1, row2) {
+                var id1 = parseInt($(row1).find("[acp-primary-key]").attr("acp-primary-key"));
+                var id2 = parseInt($(row2).find("[acp-primary-key]").attr("acp-primary-key"));
+                var paper1 = papersByID[id1];
+                var paper2 = papersByID[id2];
+                return (paper1.publishDate - paper2.publishDate) * publish_date_order;
+            }).appendTo(table_body);
+        }
+
         function setPaperTable(papers) {
             var table = $("#paper_table");
             var table_body = table.find("tbody");
@@ -152,6 +165,7 @@
             }
             var header_checkbox = table.find('thead .mdl-data-table__select input');
             header_checkbox.parent()[0].MaterialCheckbox.uncheck();
+            sortPaperTable();
         }
         function searchAuthors(search_text) {
             var matched_authors = [];
@@ -509,7 +523,7 @@
             criteria.authorIDs = getMainSelectedAuthorIDs();
 
             var from_year = parseInt($("#main_publish_date_from_input").val());
-            var start_month_of_year = $("#main_publish_date_year_type").val() === "business_year" ? 3: 0;
+            var start_month_of_year = $("#main_publish_date_year_type").val() === "business_year" ? 3 : 0;
             if (from_year > 0) {
                 var to_year = parseInt($("#main_publish_date_to_input").val());
                 criteria.publishDateFrom = Date.UTC(from_year, start_month_of_year);
@@ -710,6 +724,18 @@
                         .append(secondary_content);
                     author_list.append(author_item);
                 }
+            });
+
+            $("#publish_date_th").on("click", function (event) {
+                var table_header = $(this);
+                if (table_header.hasClass("mdl-data-table__header--sorted-descending")) {
+                    table_header.removeClass("mdl-data-table__header--sorted-descending");
+                    table_header.addClass("mdl-data-table__header--sorted-ascending");
+                } else {
+                    table_header.removeClass("mdl-data-table__header--sorted-ascending");
+                    table_header.addClass("mdl-data-table__header--sorted-descending");
+                }
+                sortPaperTable();
             });
 
             $("#paper_dialog_confirm").on("click", function () {
@@ -1068,7 +1094,7 @@
                         <th class="mdl-data-table__cell--non-numeric">Title</th>
                         <th class="mdl-data-table__cell--non-numeric">Authors</th>
                         <th class="mdl-data-table__cell--non-numeric">Published In</th>
-                        <th class="mdl-data-table__cell--non-numeric">Date</th>
+                        <th class="mdl-data-table__cell--non-numeric mdl-data-table__header--sorted-descending" id="publish_date_th">Date</th>
                         <th class="mdl-data-table__cell--non-numeric">Downloads</th>
                     </tr>
                 </thead>
