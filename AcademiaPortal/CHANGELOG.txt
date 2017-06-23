@@ -1,4 +1,9 @@
-﻿## [0.1.1] - 2017-06-08
+﻿## [0.1.2] - 2017-06-23
+### Added
+- Paper sorting based on publish date
+- Redirection from Default.aspx to root
+
+## [0.1.1] - 2017-06-08
 ### Added
 - Paper deletion.
 ### Changed
