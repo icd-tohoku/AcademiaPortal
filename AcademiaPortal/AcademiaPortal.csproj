@@ -82,6 +82,7 @@
     <Content Include="Author.aspx" />
     <Content Include="Content\Site.css" />
     <Content Include="css\acp.css" />
+    <Content Include="Default.aspx" />
     <Content Include="js\acp-helper.js" />
     <Content Include="packages.config" />
     <Content Include="AcademiaPortal.Master" />
@@ -118,6 +119,13 @@
     <Compile Include="Controllers\AuthorsController.cs" />
     <Compile Include="Controllers\BlobController.cs" />
     <Compile Include="Controllers\PapersController.cs" />
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Paper.cs" />
     <Compile Include="Paper.aspx.cs">
